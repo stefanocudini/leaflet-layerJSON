@@ -1,0 +1,35 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"> 
+<html xmlns="http://www.w3.org/1999/xhtml"> 
+<head> 
+<title>Leaflet Generic JSON Layer</title> 
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" /> 
+<link rel="stylesheet" href="/leaflet/leaflet.css" />
+<style>
+#map {
+	width:600px;
+	height:400px;
+}
+</style>
+</head>
+
+<body>
+<h3><a href="../">Leaflet Generic JSON Layer</a></h3>
+
+<h4>Simple Example: <em>retrive json by ajax and transform data in markers</em></h4>
+<div id="map"></div>
+
+<script src="/leaflet/leaflet.js"></script>
+<script src="layer-json.js"></script>
+<script>
+
+	var map = new L.Map('map', {zoom: 9, center: new L.latLng([41.575330,13.102411]) });
+
+	map.addLayer(new L.TileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'));	//base layer
+
+	map.addLayer(new L.LayerJSON({url: "search.php?lat1={minlat}&lat2={maxlat}&lon1={minlon}&lon2={maxlon}"}));
+
+</script>
+
+<div id="copy">powered by <a href="mailto:stefano.cudini@gmail.com">Stefano Cudini</a></div>
+</body>
+</html>

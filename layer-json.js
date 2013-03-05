@@ -1,10 +1,16 @@
 /*
- * copyright 2013 stefano.cudini@gmail.com
+ * Leaflet Generic JSON Layer 1.0.0
+ * http://labs.easyblog.it/maps/leaflet-layerjson
  *
+ * https://github.com/stefanocudini/leaflet-layerJSON
+ * https://bitbucket.org/zakis_/leaflet-layerJSON
+ *
+ * Copyright 2013, Stefano Cudini - stefano.cudini@gmail.com
+ * Licensed under the MIT license.
  */
 (function() {
 
-var getJSON = function (url, cb) {
+var getJSON = function (url, cb) {	//default ajax request
 
 	if (window.XMLHttpRequest === undefined) {
 		window.XMLHttpRequest = function() {
@@ -44,21 +50,21 @@ L.LayerJSON = L.FeatureGroup.extend({
 	includes: L.Mixin.Events,
 	
 	options: {
-		ajaxCall: getJSON,	//funzione per richiesta ajax
-		attribution: null,
-		oneUpdate: false,		//aggiorna dati solo una volta quando si aggiunge il layer	
-		url: "search.php?lat1={minlat}&lat2={maxlat}&lng1={minlon}&lng2={maxlon}",
-		buildPopup: null,		//funzione che costruisce il popup
-		buildIcon: null		//funzione che costruisce il popup
+		url: "search.php?lat1={minlat}&lat2={maxlat}&lon1={minlon}&lon2={maxlon}",
+		ajaxCall: getJSON,		//default function for load data
+		propertyLoc: 'loc', 	//json property used as Latlng of marker
+		propertyTitle: 'title', //json property used as title(popup, marker, icon)		
+		oneUpdate: false,		//request data only at startup
+		buildPopup: null,		//function popup builder
+		buildIcon: null,		//function icon builder
+		attribution: ''			//attribution text		
 	},
     
 	initialize: function(options) {
 		L.FeatureGroup.prototype.initialize.call(this, []);
-		
 		L.Util.setOptions(this, options);
 		this._buildPopup = this.options.buildPopup || this._defaultBuildPopup;
 		this._buildIcon = this.options.buildIcon || this._defaultBuildIcon;
-		//this._layer = new L.LayerGroup();
 		this.sourceRequest = null;
 	},
 
@@ -83,28 +89,31 @@ L.LayerJSON = L.FeatureGroup.extend({
 	},
 	
 	_defaultBuildPopup: function(data) {	//default popup builder
-		var ret = '<h4>'+ data.nome +'</h4>';
-		delete data.nome;
+		var html = '';
+		
+		if(data.hasOwnProperty(this.options.propertyTitle))
+		{
+			html += '<h4>'+ data[this.options.propertyTitle] +'</h4>';
+			delete data[this.options.propertyTitle];
+		}
+		
 		for(var i in data)
-			ret += '<b>'+i+':</b> '+data[i]+'<br>';
-		return ret;
+			html += '<b>'+i+':</b> '+data[i]+'<br>';
+		
+		return html;
 	},
 	
-	_defaultBuildIcon: function(label) {
-		label = label || '';
-		return new L.DivIcon({
-			iconSize: new L.Point(30, 35),
-			iconAnchor: new L.Point(14, 35),
-			popupAnchor: new L.Point(0, -35),
-			//html: '<span class="climbo-icon-label">'+label+'</span>',
-			className: 'climbo-icon'
-		});
+	_defaultBuildIcon: function() {
+		return new L.Icon.Default();
 	},
 	
-	addNewMarker: function(ll, data) {
-		var title = data.nome,
+	addNewMarker: function( data ) {
+		var latlng = data[ this.options.propertyLoc ],
+			title = data[ this.options.propertyTitle ],
+			//TODO check propertyLoc and propertyTitle in addNewMarker
 			icon = this._buildIcon(title),
-			marker = new L.Marker(ll, L.Util.extend({icon: icon}, data) );
+			markerOpts = L.Util.extend({icon: icon}, data),
+			marker = new L.Marker(latlng, markerOpts );
 		
 		marker.bindPopup( this._buildPopup( data ) );
 		
@@ -121,24 +130,19 @@ L.LayerJSON = L.FeatureGroup.extend({
 			url = L.Util.template(this.options.url, {minlat: sw.lat, maxlat: ne.lat, minlon: sw.lng, maxlon: ne.lng});
 
 		if(this.sourceRequest)
-			this.sourceRequest.abort();	//blocca l'ultima richiesta di dati
+			this.sourceRequest.abort();	//block last data request
 
 		var that = this;
 		this.sourceRequest = this.options.ajaxCall(url, function(json) {
 
 			that.sourceRequest = null;
 
-			var data = {};
-			
-			if(json.ok)
-				data = json.results;
-
-			that.fire('dataloaded', {data: data});
+			that.fire('dataloaded', {data: json});
 			
 			that.clearLayers();
 
-			for(var k in data)
-				that.addNewMarker( data[k].loc, data[k] );
+			for(var k in json)
+				that.addNewMarker( json[k] );
 		});
 	}
 });
