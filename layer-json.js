@@ -81,7 +81,7 @@ L.LayerJSON = L.FeatureGroup.extend({
     
 	onRemove: function(map) {
 		L.FeatureGroup.prototype.onRemove.call(this, map);		
-		this._map.off('moveend', this.update, this);
+		map.off('moveend', this.update, this);
 	},	
 	
 	getAttribution: function() {
@@ -96,7 +96,7 @@ L.LayerJSON = L.FeatureGroup.extend({
 			html += '<h4>'+ data[this.options.propertyTitle] +'</h4>';
 			delete data[this.options.propertyTitle];
 		}
-		
+		delete data[this.options.propertyLoc];
 		for(var i in data)
 			html += '<b>'+i+':</b> '+data[i]+'<br>';
 		
@@ -125,10 +125,11 @@ L.LayerJSON = L.FeatureGroup.extend({
 	update: function() {
 	
 		var bb = this._map.getBounds(),
+
 			sw = bb.getSouthWest(),
 			ne = bb.getNorthEast(),
 			url = L.Util.template(this.options.url, {minlat: sw.lat, maxlat: ne.lat, minlon: sw.lng, maxlon: ne.lng});
-
+		//TODO	.toFixed(6)
 		if(this.sourceRequest)
 			this.sourceRequest.abort();	//block last data request
 
