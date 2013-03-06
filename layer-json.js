@@ -10,7 +10,7 @@
  */
 (function() {
 
-var getAjax = function (url, cb) {	//default ajax request
+var getAjax = function(url, cb) {	//default ajax request
 
 	if (window.XMLHttpRequest === undefined) {
 		window.XMLHttpRequest = function() {
@@ -45,37 +45,32 @@ var getAjax = function (url, cb) {	//default ajax request
     return request;   
 };
 
-//TODO 
-//var getJsonp =f unction(text, callAfter) {  //extract searched records from remote jsonp service
-//		
-//		var that = this;
-//		L.Control.Search.callJsonp = function(data) {	//jsonp callback
-//			var fdata = that._filterJSON.apply(that,[data]);//_filterJSON defined in inizialize...
-//			callAfter(fdata);
-//		}
-//		var script = L.DomUtil.create('script','search-jsonp', document.getElementsByTagName('body')[0] ),			
-//			url = L.Util.template(this.options.jsonpUrl, {s: text, c:"L.Control.Search.callJsonp"});
-//			//parsing url
-//			//rnd = '&_='+Math.floor(Math.random()*10000);
-//			//TODO add rnd param or randomize callback name! in recordsFromJsonp
-//		script.type = 'text/javascript';
-//		script.src = url;
-//		return this;
-//};
+var getJsonp = function(url, cb) {  //extract searched records from remote jsonp service
+		
+	L.LayerJSON.callJsonp = function(data) {	//jsonp callback
+		//TODO data = filterJSON.apply(that,[data]);
+		cb(data);
+	}
+	var script = L.DomUtil.create('script','layerjson-jsonp', document.getElementsByTagName('body')[0] );
+
+	script.type = 'text/javascript';
+	script.src = url+'L.LayerJSON.callJsonp';
+};
 
 L.LayerJSON = L.FeatureGroup.extend({
 
 	includes: L.Mixin.Events,
 	
 	options: {
-		url: "search.php?lat1={minlat}&lat2={maxlat}&lon1={minlon}&lon2={maxlon}",
-		ajaxCall: getAjax,		//default function for load data
-		propertyLoc: 'loc', 	//json property used as Latlng of marker
-		propertyTitle: 'title', //json property used as title(popup, marker, icon)		
-		oneUpdate: false,		//request data only at startup
-		buildPopup: null,		//function popup builder
-		buildIcon: null,		//function icon builder
-		attribution: ''			//attribution text		
+		url: 'search.php?lat1={minlat}&lat2={maxlat}&lon1={minlon}&lon2={maxlon}',
+		jsonpParam: null,			//callback parameter name for jsonp request append to url
+		dataCall: null,				//alternative function for load data (if use $.ajax() set async=false)
+		propertyLoc: 'loc', 		//json property used as Latlng of marker
+		propertyTitle: 'title', 	//json property used as title(popup, marker, icon)		
+		oneUpdate: false,			//request data only at startup
+		buildPopup: null,			//function popup builder
+		buildIcon: null,			//function icon builder
+		attribution: ''				//attribution text		
 	},
     
 	initialize: function(options) {
@@ -83,7 +78,15 @@ L.LayerJSON = L.FeatureGroup.extend({
 		L.Util.setOptions(this, options);
 		this._buildPopup = this.options.buildPopup || this._defaultBuildPopup;
 		this._buildIcon = this.options.buildIcon || this._defaultBuildIcon;
-		this.sourceRequest = null;
+		this._dataRequest = null;		
+		this._dataUrl = this.options.url;
+		if(this.options.jsonpParam)
+		{
+			this._dataUrl += '&'+this.options.jsonpParam+'=';
+			this._dataCall = getJsonp;
+		}
+		else
+			this._dataCall = this.options.dataCall || getAjax;
 	},
 
 	onAdd: function(map) {
@@ -143,18 +146,18 @@ L.LayerJSON = L.FeatureGroup.extend({
 	update: function() {
 	
 		var bb = this._map.getBounds(),
-
 			sw = bb.getSouthWest(),
 			ne = bb.getNorthEast(),
-			url = L.Util.template(this.options.url, {minlat: sw.lat, maxlat: ne.lat, minlon: sw.lng, maxlon: ne.lng});
-		//TODO	.toFixed(6)
-		if(this.sourceRequest)
-			this.sourceRequest.abort();	//block last data request
+			//TODO coords sended precision .toFixed(6)			
+			url = L.Util.template(this._dataUrl, {minlat: sw.lat, maxlat: ne.lat, minlon: sw.lng, maxlon: ne.lng});
+
+		if(this._dataRequest)
+			this._dataRequest.abort();	//block last data request
 
 		var that = this;
-		this.sourceRequest = this.options.ajaxCall(url, function(json) {
+		this._dataRequest = this._dataCall(url, function(json) {
 
-			that.sourceRequest = null;
+			that._dataRequest = null;
 
 			that.fire('dataloaded', {data: json});
 			

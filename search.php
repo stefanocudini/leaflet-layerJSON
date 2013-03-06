@@ -2,14 +2,14 @@
 
 @header('Content-type: application/json; charset=utf-8');
 
-$jsonp = false;
+$jsonp = true;
 
-if($jsonp and isset($_GET['callback']) and !empty($_GET['callback']))
-	$jsonpCall = trim($_GET['callback']);
+if($jsonp and isset($_GET['call_jsonp']) and !empty($_GET['call_jsonp']))
+	$jsonpCall = trim($_GET['call_jsonp']);
 else
 	$jsonpCall = false;
 
-if($jsonp===false and isset($_GET['callback']))
+if($jsonp===false and isset($_GET['call_jsonp']))
 	die("jsonp not support");
 
 if(isset($_GET['lat1'],$_GET['lon1'],$_GET['lat2'],$_GET['lon2'])):	//BOUNDINGBOX
@@ -29,7 +29,7 @@ if(isset($_GET['lat1'],$_GET['lon1'],$_GET['lat2'],$_GET['lon2'])):	//BOUNDINGBO
 		}
 
 		$json = json_encode( $coords );
-		echo $jsonpCall ? $jsonpCall."($json)" : $json;
+		echo $jsonpCall ? $jsonpCall."($json);" : $json;
 endif;
 
 function randf ($min,$max) {
