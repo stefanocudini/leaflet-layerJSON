@@ -10,53 +10,6 @@
  */
 (function() {
 
-var getAjax = function(url, cb) {	//default ajax request
-
-	if (window.XMLHttpRequest === undefined) {
-		window.XMLHttpRequest = function() {
-			try {
-				return new ActiveXObject("Microsoft.XMLHTTP.6.0");
-			}
-			catch  (e1) {
-				try {
-					return new ActiveXObject("Microsoft.XMLHTTP.3.0");
-				}
-				catch (e2) {
-					throw new Error("XMLHttpRequest is not supported");
-				}
-			}
-		};
-	}
-    var request = new XMLHttpRequest(),
-    	response = {};
-
-    request.open("GET", url);
-    request.onreadystatechange = function() {
-        if (request.readyState === 4 && request.status === 200) {
-        	if(window.JSON) {
-                response = JSON.parse(request.responseText);
-        	} else {
-        		response = eval("("+ request.responseText + ")");
-        	}
-            cb(response);
-        }
-    };
-    request.send();
-    return request;   
-};
-
-var getJsonp = function(url, cb) {  //extract searched records from remote jsonp service
-		
-	L.LayerJSON.callJsonp = function(data) {	//jsonp callback
-		//TODO data = filterJSON.apply(that,[data]);
-		cb(data);
-	}
-	var script = L.DomUtil.create('script','layerjson-jsonp', document.getElementsByTagName('body')[0] );
-
-	script.type = 'text/javascript';
-	script.src = url+'L.LayerJSON.callJsonp';
-};
-
 L.LayerJSON = L.FeatureGroup.extend({
 
 	includes: L.Mixin.Events,
@@ -83,10 +36,10 @@ L.LayerJSON = L.FeatureGroup.extend({
 		if(this.options.jsonpParam)
 		{
 			this._dataUrl += '&'+this.options.jsonpParam+'=';
-			this._dataCall = getJsonp;
+			this._dataCall = this.getJsonp;
 		}
 		else
-			this._dataCall = this.options.dataCall || getAjax;
+			this._dataCall = this.options.dataCall || this.getAjax;
 	},
 
 	onAdd: function(map) {
@@ -155,6 +108,7 @@ L.LayerJSON = L.FeatureGroup.extend({
 			this._dataRequest.abort();	//block last data request
 
 		var that = this;
+		that.fire('dataloading', {url: url});		
 		this._dataRequest = this._dataCall(url, function(json) {
 
 			that._dataRequest = null;
@@ -166,7 +120,55 @@ L.LayerJSON = L.FeatureGroup.extend({
 			for(var k in json)
 				that.addNewMarker( json[k] );
 		});
-	}
+	},
+
+	getAjax: function(url, cb) {	//default ajax request
+
+		if (window.XMLHttpRequest === undefined) {
+			window.XMLHttpRequest = function() {
+				try {
+					return new ActiveXObject("Microsoft.XMLHTTP.6.0");
+				}
+				catch  (e1) {
+					try {
+						return new ActiveXObject("Microsoft.XMLHTTP.3.0");
+					}
+					catch (e2) {
+						throw new Error("XMLHttpRequest is not supported");
+					}
+				}
+			};
+		}
+		var request = new XMLHttpRequest(),
+			response = {};
+
+		request.open("GET", url);
+		request.onreadystatechange = function() {
+		    if (request.readyState === 4 && request.status === 200) {
+		    	if(window.JSON) {
+		            response = JSON.parse(request.responseText);
+		    	} else {
+		    		response = eval("("+ request.responseText + ")");
+		    	}
+		        cb(response);
+		    }
+		};
+		request.send();
+		return request;   
+	},
+	
+	getJsonp: function(url, cb) {  //extract searched records from remote jsonp service
+		var body = document.getElementsByTagName('body')[0],
+			script = L.DomUtil.create('script','layerjson-jsonp', body );
+
+		L.LayerJSON.callJsonp = function(data) {	//jsonp callback
+			//TODO data = filterJSON.apply(that,[data]);
+			cb(data);
+			body.removeChild(script);
+		}
+		script.type = 'text/javascript';
+		script.src = url+'L.LayerJSON.callJsonp';
+	}	
 });
 
 }).call(this);

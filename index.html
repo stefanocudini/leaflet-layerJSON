@@ -5,31 +5,120 @@
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" /> 
 <link rel="stylesheet" href="/leaflet/leaflet.css" />
 <style>
+body {
+	background: #ddf;
+	color:#669;
+	margin:20px;
+}
+h3,h4,h5 {margin:0 0 10px 0}
+ul {
+	font-size:.85em;
+	margin:0;
+	padding:0;
+}
+li {
+	margin:0 0 2px 18px;
+}
 #map {
+	border:2px solid #669;
 	width:600px;
 	height:400px;
+	float:left;
+}
+#data {
+	display:block;
+	float:left;
+	width:220px;
+	height:400px;
+	background:#eee;
+	border:2px solid #ccc;
+	padding:2px;
+	font-size:.85em;
+	margin: 0 20px;
+	overflow:scroll;
+}
+#content,#refs {
+	float:left;
+	margin-left:1em;
+}
+#copy {
+	position:fixed;
+	top:-.85em;
+	right:3em;
+	color:#00c;
+	background:#fff;
+	border-radius:.5em;
+	box-shadow: 0 0 6px #888;	
+	padding:1em .5em .25em .5em;
+	z-index:4000;
+	font-size:small;
+	filter: alpha(opacity=70);
+	-khtml-opacity: .7;
+	-moz-opacity: .7;
+	opacity: .7;		
 }
 </style>
 </head>
 
 <body>
 <h3><a href="../">Leaflet Generic JSON Layer</a></h3>
+<p>Simple way for transform JSON data in Leaflet Layer!</p>
+<div id="content">
+	<h5>Features</h5>
+	<ul id="ff">
+		<li>Load JSON data via AJAX or JSONP</li>
+		<li>Filter JSON data from third-party jsonp services</li>
+		<li>Events: dataloading, dataloaded, markeradded</li>
+		<li>Override function for load data</li>
+		<li>Customize popup content and icon marker</li>
+	</ul>
+</div>
+<div id="refs">	
+	<h4>Repositories</h4>
+	<a target="_blank" href="https://bitbucket.org/zakis_/leaflet-layerjson">Bitbucket.org</a>
+	<br />
+	<a target="_blank" href="https://github.com/stefanocudini/leaflet-layerJSON">Github.com</a>
 
-<h4>Simple Example: <em>retrieve json by ajax and transform data in markers</em></h4>
-<div id="map"></div>
+	<h4>Demo</h4>
+	<a href="http://labs.easyblog.it/maps/leaflet-layerjson">labs.easyblog.it/maps/leaflet-layerjson</a>
+
+	<h4>Download</h4>
+	<ul>
+		<li><a href="https://github.com/stefanocudini/leaflet-layerJSON/archive/master.zip">Dev Pack (.zip)</a></li>
+		<li><a href="layer-json.js">Source Code (.js)</a></li>
+		<li><a href="layer-json.min.js">Compressed (.min.js)</a></li>		
+	</ul>
+</div>
+
+<div style="clear:both">
+	<h4>Ajax demo:</h4>
+	<div id="map"></div>
+	<pre id="data"></pre>	
+</div>
 
 <script src="/leaflet/leaflet.js"></script>
 <script src="layer-json.js"></script>
 <script>
+	
+	/* DEMO SOURCE CODE */
 
 	var map = new L.Map('map', {zoom: 9, center: new L.latLng([41.575330,13.102411]) });
 
 	map.addLayer(new L.TileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'));	//base layer
 
 	var jsonLayer = new L.LayerJSON({url: "search.php?lat1={minlat}&lat2={maxlat}&lon1={minlon}&lon2={maxlon}"});
+	
 	map.addLayer(jsonLayer);
 	
-	map.addControl(new L.Control.Layers({},{'json data': jsonLayer},{ collapsed:false}));
+	map.addControl(new L.Control.Layers({},{'JSON Data Layer': jsonLayer},{collapsed:false}));
+
+	jsonLayer.on('dataloaded', function(e) {	//show loaded data!
+		if(JSON)
+			L.DomUtil.get('data').innerHTML = JSON.stringify( e.data, null, ' ' );
+		else
+			console.log(e.data);
+	});
+		
 </script>
 
 <div id="copy">powered by <a href="mailto:stefano.cudini@gmail.com">Stefano Cudini</a></div>
