@@ -10,7 +10,7 @@ body {
 	color:#669;
 	margin:20px;
 }
-h3,h4,h5 {margin:0 0 10px 0}
+h3,h4,h5 {margin:10px 0 0 0}
 ul {
 	font-size:.85em;
 	margin:0;
@@ -39,7 +39,7 @@ li {
 }
 #content,#refs {
 	float:left;
-	margin-left:1em;
+	margin-right:1em;
 }
 #copy {
 	position:fixed;
@@ -57,6 +57,9 @@ li {
 	-moz-opacity: .7;
 	opacity: .7;		
 }
+#comments {
+	clear:both;
+}
 </style>
 </head>
 
@@ -64,7 +67,7 @@ li {
 <h3><a href="../">Leaflet Generic JSON Layer</a></h3>
 <p>Simple way for transform JSON data in Leaflet Layer!</p>
 <div id="content">
-	<h5>Features</h5>
+	<h4>Features</h4>
 	<ul id="ff">
 		<li>Load JSON data via AJAX or JSONP</li>
 		<li>Filter JSON data from third-party jsonp services</li>
@@ -122,7 +125,11 @@ li {
 </script>
 
 <div id="copy">powered by <a href="mailto:stefano.cudini@gmail.com">Stefano Cudini</a></div>
-
+<div id="comments">
+	<div id="disqus_thread"></div>
+</div>
+<script>var disqus_shortname = 'easyblog-it'</script>
+<script type="text/javascript" src="/labs.disqus.js"></script>
 <script type="text/javascript" src="/labs.analytics.js"></script>
 </body>
 </html>
