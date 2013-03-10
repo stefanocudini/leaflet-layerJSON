@@ -42,28 +42,30 @@ L.LayerJSON = L.FeatureGroup.extend({
 			this._dataCall = this.options.dataCall || this.getAjax;
 	},
 
-	onAdd: function(map) {
+	onAdd: function(map) { //console.info('onAdd');
+		
 		L.FeatureGroup.prototype.onAdd.call(this, map);		//set this._map
 
 		this._icon = this._buildIcon();
 		
 		if(this.options.oneUpdate===false)
-			this._map.on('moveend', this.update, this);
-		
+			map.on('moveend', this.update, this);
+			
 		this.update();
 	},
     
-	onRemove: function(map) {
-	
+	onRemove: function(map) { //console.info('onRemove');
+		
+		map.off('moveend', this.update, this); //FIXME not work!
+		
 		L.FeatureGroup.prototype.onRemove.call(this, map);	
 
 		for (var i in this._layers) {
 			if (this._layers.hasOwnProperty(i)) {
 				L.FeatureGroup.prototype.removeLayer.call(this, this._layers[i]);
 			}
-		}			
-		map.off('moveend', this.update, this);
-	},	
+		}		
+	},
 	
 	getAttribution: function() {
 		return this.options.attribution;
@@ -92,7 +94,7 @@ L.LayerJSON = L.FeatureGroup.extend({
 		var latlng = data[ this.options.propertyLoc ],
 			title = data[ this.options.propertyTitle ],
 			//TODO check propertyLoc and propertyTitle in addNewMarker
-			icon = this._buildIcon(title),
+			icon = this._buildIcon(title, data),
 			markerOpts = L.Util.extend({icon: icon}, data),
 			marker = new L.Marker(latlng, markerOpts );
 		
@@ -103,7 +105,12 @@ L.LayerJSON = L.FeatureGroup.extend({
 		this.addLayer(marker);
 	},
     
-	update: function() {		//populate layer
+	update: function(e) {		//populate layer
+	
+	//console.info('update');
+	
+	//console.log(arguments);
+	//TODO implement minimun shift for new request!
 	
 		var bb = this._map.getBounds(),
 			sw = bb.getSouthWest(),
