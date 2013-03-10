@@ -62,7 +62,7 @@ L.LayerJSON = L.FeatureGroup.extend({
 		return this.options.attribution;
 	},
 	
-	_defaultBuildPopup: function(data) {	//default popup builder
+	_defaultBuildPopup: function(marker, data) {	//default popup builder
 		var html = '';
 		
 		if(data.hasOwnProperty(this.options.propertyTitle))
@@ -89,14 +89,14 @@ L.LayerJSON = L.FeatureGroup.extend({
 			markerOpts = L.Util.extend({icon: icon}, data),
 			marker = new L.Marker(latlng, markerOpts );
 		
-		marker.bindPopup( this._buildPopup( data ) );
+		marker.bindPopup( this._buildPopup( marker, data ) );
 		
 		this.fire('markeradded', {marker: marker});
 
 		this.addLayer(marker);
 	},
     
-	update: function() {
+	update: function() {		//populate layer
 	
 		var bb = this._map.getBounds(),
 			sw = bb.getSouthWest(),
