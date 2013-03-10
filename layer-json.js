@@ -54,7 +54,14 @@ L.LayerJSON = L.FeatureGroup.extend({
 	},
     
 	onRemove: function(map) {
-		L.FeatureGroup.prototype.onRemove.call(this, map);		
+	
+		L.FeatureGroup.prototype.onRemove.call(this, map);	
+
+		for (var i in this._layers) {
+			if (this._layers.hasOwnProperty(i)) {
+				L.FeatureGroup.prototype.removeLayer.call(this, this._layers[i]);
+			}
+		}			
 		map.off('moveend', this.update, this);
 	},	
 	
