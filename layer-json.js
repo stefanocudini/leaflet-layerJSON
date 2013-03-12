@@ -13,11 +13,17 @@
 L.LayerJSON = L.FeatureGroup.extend({
 
 	includes: L.Mixin.Events,
-	
+	//
+	//Managed Events:
+	//	Event			Data passed		Description
+	//	markercreated	{marker}		fired after new marker(and his popup) is created, but before added on the layer
+	//  dataloading		{url}			fired before ajax/jsonp reques(useful for show gif loader)
+	//	dataloaded		{data}			fired on ajax/jsonp request success
+	//
 	options: {
 		url: 'search.php?lat1={minlat}&lat2={maxlat}&lon1={minlon}&lon2={maxlon}',
 		jsonpParam: null,			//callback parameter name for jsonp request append to url
-		dataCall: null,				//alternative function for load data (if use $.ajax() set async=false)
+		dataCall: null,				//alternative function that return data (if use $.ajax() set async=false)
 		propertyLoc: 'loc', 		//json property used as Latlng of marker
 		propertyTitle: 'title', 	//json property used as title(popup, marker, icon)		
 		oneUpdate: false,			//request data only at startup
@@ -45,8 +51,6 @@ L.LayerJSON = L.FeatureGroup.extend({
 	onAdd: function(map) { //console.info('onAdd');
 		
 		L.FeatureGroup.prototype.onAdd.call(this, map);		//set this._map
-
-		this._icon = this._buildIcon();
 		
 		if(this.options.oneUpdate===false)
 			map.on('moveend', this.update, this);
@@ -79,7 +83,7 @@ L.LayerJSON = L.FeatureGroup.extend({
 			html += '<h4>'+ data[this.options.propertyTitle] +'</h4>';
 			delete data[this.options.propertyTitle];
 		}
-		delete data[this.options.propertyLoc];
+		data[this.options.propertyLoc] = data[this.options.propertyLoc].join();
 		for(var i in data)
 			html += '<b>'+i+':</b> '+data[i]+'<br>';
 		
@@ -100,7 +104,7 @@ L.LayerJSON = L.FeatureGroup.extend({
 		
 		marker.bindPopup( this._buildPopup( marker, data ) );
 		
-		this.fire('markeradded', {marker: marker});
+		this.fire('markercreated', {marker: marker});
 
 		this.addLayer(marker);
 	},
