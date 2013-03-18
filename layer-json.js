@@ -54,6 +54,7 @@ L.LayerJSON = L.FeatureGroup.extend({
 		
 		if(this.options.oneUpdate===false)
 			map.on('moveend', this.update, this);
+			//TODO add option min shift
 			
 		this.update();
 	},
@@ -133,10 +134,11 @@ L.LayerJSON = L.FeatureGroup.extend({
 
 			that.fire('dataloaded', {data: json});
 			
+			//TODO do not replace marker just loaded
 			that.clearLayers();
 
 			for(var k in json)
-				that.addNewMarker( json[k] );
+				that.addNewMarker.call(that, json[k] );
 		});
 	},
 
