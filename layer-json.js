@@ -28,6 +28,7 @@ L.LayerJSON = L.FeatureGroup.extend({
 		propertyTitle: 'title', 	//json property used as title(popup, marker, icon)		
 		oneUpdate: false,			//request data only at startup
 		buildPopup: null,			//function popup builder
+		optsPopup: null,				//popup options
 		buildIcon: null,			//function icon builder
 		attribution: ''				//attribution text		
 	},
@@ -103,7 +104,7 @@ L.LayerJSON = L.FeatureGroup.extend({
 			markerOpts = L.Util.extend({icon: icon}, data),
 			marker = new L.Marker(latlng, markerOpts );
 		
-		marker.bindPopup( this._buildPopup( marker, data ) );
+		marker.bindPopup( this._buildPopup( marker, data ), this.options.optsPopup );
 		
 		this.fire('markercreated', {marker: marker});
 
@@ -120,7 +121,8 @@ L.LayerJSON = L.FeatureGroup.extend({
 		var bb = this._map.getBounds(),
 			sw = bb.getSouthWest(),
 			ne = bb.getNorthEast(),
-			//TODO coords sended precision .toFixed(6)			
+			//aggiungi margine bbox piu piccolo della mappa
+			//TODO coords sended precision .toFixed(6)
 			url = L.Util.template(this._dataUrl, {minlat: sw.lat, maxlat: ne.lat, minlon: sw.lng, maxlon: ne.lng});
 
 		if(this._dataRequest)
