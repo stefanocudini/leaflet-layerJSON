@@ -29,8 +29,9 @@ L.LayerJSON = L.FeatureGroup.extend({
 		layerTarget: null,			//pre-existing layer for contents(it is a FeatureGroup o LayerGroup)
 		oneUpdate: false,			//request data only at startup
 		buildPopup: null,			//function popup builder
-		optsPopup: null,				//popup options
+		optsPopup: null,			//popup options
 		buildIcon: null,			//function icon builder
+		minMoveDistance: 8000,		//min shift for update data(in meters)
 		attribution: ''				//attribution text
 	},
     
@@ -41,6 +42,7 @@ L.LayerJSON = L.FeatureGroup.extend({
 		this._buildIcon = this.options.buildIcon || this._defaultBuildIcon;
 		this._dataRequest = null;		
 		this._dataUrl = this.options.url;
+		this._center = null;
 		if(this.options.jsonpParam)
 		{
 			this._dataUrl += '&'+this.options.jsonpParam+'=';
@@ -53,9 +55,15 @@ L.LayerJSON = L.FeatureGroup.extend({
 	onAdd: function(map) { //console.info('onAdd');
 		
 		L.FeatureGroup.prototype.onAdd.call(this, map);		//set this._map
-		
+		this._center = map.getCenter();
+
 		if(this.options.oneUpdate===false)
-			map.on('moveend', this.update, this);
+			map.on('moveend', function(e) {
+				if( this._center.distanceTo( map.getCenter()) < this.options.minMoveDistance )
+					return false;
+				this._center = map.getCenter();
+				this.update();
+			}, this);
 			//TODO add option min shift
 			
 		this.update();
