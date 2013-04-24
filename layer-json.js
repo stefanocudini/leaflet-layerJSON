@@ -25,15 +25,16 @@ L.LayerJSON = L.FeatureGroup.extend({
 		jsonpParam: null,			//callback parameter name for jsonp request append to url
 		dataCall: null,				//alternative function that return data (if use $.ajax() set async=false)
 		propertyLoc: 'loc', 		//json property used as Latlng of marker
-		propertyTitle: 'title', 	//json property used as title(popup, marker, icon)		
+		propertyTitle: 'title', 	//json property used as title(popup, marker, icon)
+		layerTarget: null,			//pre-existing layer for contents(it is a FeatureGroup o LayerGroup)
 		oneUpdate: false,			//request data only at startup
 		buildPopup: null,			//function popup builder
 		optsPopup: null,				//popup options
 		buildIcon: null,			//function icon builder
-		attribution: ''				//attribution text		
+		attribution: ''				//attribution text
 	},
     
-	initialize: function(options) {
+	initialize: function(options) {			
 		L.FeatureGroup.prototype.initialize.call(this, []);
 		L.Util.setOptions(this, options);
 		this._buildPopup = this.options.buildPopup || this._defaultBuildPopup;
@@ -76,6 +77,29 @@ L.LayerJSON = L.FeatureGroup.extend({
 	getAttribution: function() {
 		return this.options.attribution;
 	},
+
+	addLayer: function (layer) {
+		if(this.options.layerTarget)
+			this.options.layerTarget.addLayer.call(this.options.layerTarget, layer);
+		else
+			L.FeatureGroup.prototype.addLayer.call(this, layer);
+		return this;
+	},
+	removeLayer: function (layer) {
+		if(this.options.layerTarget)
+			this.options.layerTarget.removeLayer.call(this.options.layerTarget, layer);
+		else
+			L.FeatureGroup.prototype.removeLayer.call(this, layer);
+		return this;
+	},
+	
+	clearLayers: function () {
+		if(this.options.layerTarget)
+			this.options.layerTarget.clearLayers.call(this.options.layerTarget);
+		else
+			L.FeatureGroup.prototype.clearLayers.call(this);
+		return this;
+	},
 	
 	_defaultBuildPopup: function(marker, data) {	//default popup builder
 		var html = '';
@@ -103,6 +127,9 @@ L.LayerJSON = L.FeatureGroup.extend({
 			icon = this._buildIcon(title, data),
 			markerOpts = L.Util.extend({icon: icon}, data),
 			marker = new L.Marker(latlng, markerOpts );
+			
+		//var idl = L.stamp(marker);
+		//console.log(idl,data.nome);
 		
 		marker.bindPopup( this._buildPopup( marker, data ), this.options.optsPopup );
 		
@@ -114,9 +141,8 @@ L.LayerJSON = L.FeatureGroup.extend({
 	update: function(e) {		//populate layer
 	
 	//console.info('update');
-	
 	//console.log(arguments);
-	//TODO implement minimun shift for new request!
+	//TODO implement check minimun shift for new request!
 	
 		var bb = this._map.getBounds(),
 			sw = bb.getSouthWest(),
