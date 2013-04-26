@@ -20,6 +20,8 @@ L.LayerJSON = L.FeatureGroup.extend({
 	//  dataloading		{url}			fired before ajax/jsonp reques(useful for show gif loader)
 	//	dataloaded		{data}			fired on ajax/jsonp request success
 	//
+	
+	//TODO implement markers caching using index: lat+''+lng
 	options: {
 		url: 'search.php?lat1={minlat}&lat2={maxlat}&lon1={minlon}&lon2={maxlon}',
 		jsonpParam: null,			//callback parameter name for jsonp request append to url
@@ -136,12 +138,14 @@ L.LayerJSON = L.FeatureGroup.extend({
 			markerOpts = L.Util.extend({icon: icon}, data),
 			marker = new L.Marker(latlng, markerOpts );
 			
-		//var idl = L.stamp(marker);
+		var idl = L.stamp(marker);
 		//console.log(idl,data.nome);
 		
 		marker.bindPopup( this._buildPopup( marker, data ), this.options.optsPopup );
 		
 		this.fire('markercreated', {marker: marker});
+
+//console.log('addNewMarker '+idl+' '+ marker.options.id);
 
 		this.addLayer(marker);
 	},
