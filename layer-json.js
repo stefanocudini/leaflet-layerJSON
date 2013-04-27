@@ -34,6 +34,7 @@ L.LayerJSON = L.FeatureGroup.extend({
 		optsPopup: null,			//popup options
 		buildIcon: null,			//function icon builder
 		minShift: 8000,				//min shift for update data(in meters)
+		cache: false,				//caching marker, indexing by latlng
 		attribution: ''				//attribution text
 	},
     
@@ -52,6 +53,7 @@ L.LayerJSON = L.FeatureGroup.extend({
 		}
 		else
 			this._dataCall = this.options.dataCall || this.getAjax;
+		this._cacheData = {};//used for caching
 	},
 
 	onAdd: function(map) { //console.info('onAdd');
@@ -93,6 +95,7 @@ L.LayerJSON = L.FeatureGroup.extend({
 			L.FeatureGroup.prototype.addLayer.call(this, layer);
 		return this;
 	},
+	
 	removeLayer: function (layer) {
 		if(this.options.layerTarget)
 			this.options.layerTarget.removeLayer.call(this.options.layerTarget, layer);
@@ -133,9 +136,6 @@ L.LayerJSON = L.FeatureGroup.extend({
 //	},
 	
 	addMarker: function(data) {
-	
-		if(this.options.filter && !this.options.filter(data))
-			return false;
 		
 		var latlng = data[ this.options.propertyLoc ],
 			title = data[ this.options.propertyTitle ],
@@ -143,48 +143,57 @@ L.LayerJSON = L.FeatureGroup.extend({
 			icon = this._buildIcon(title, data),
 			markerOpts = L.Util.extend({icon: icon}, data),
 			marker = new L.Marker(latlng, markerOpts );
-			
-		var idl = L.stamp(marker);
-		//console.log(idl,data.nome);
 		
 		marker.bindPopup( this._buildPopup(marker, data), this.options.optsPopup );
 		
 		if(this.options.onEachMarker)
 			this.options.onEachMarker(marker, data);
-//console.log('addMarker '+idl+' '+ marker.options.id);
+
+		//console.log('addMarker '+ marker.options.id);
 
 		this.addLayer(marker);
+
+		return marker;
 	},
     
-	update: function(e) {		//populate layer
+	update: function(e) {		//populate target layer
 	
 		var bb = this._map.getBounds(),
 			sw = bb.getSouthWest(),
 			ne = bb.getNorthEast(),
 			//aggiungi margine bbox piu piccolo della mappa
 			//TODO coords sended precision .toFixed(6)
-			url = L.Util.template(this._dataUrl, {minlat: sw.lat, maxlat: ne.lat, minlon: sw.lng, maxlon: ne.lng});
+			url = L.Util.template(this._dataUrl, {minlat: sw.lat, maxlat: ne.lat, minlon: sw.lng, maxlon: ne.lng}),
+			cacheIndex = '';
 
 		if(this._dataRequest)
 			this._dataRequest.abort();	//block last data request
 
 		var that = this;
 		that.fire('dataloading', {url: url});		
-		this._dataRequest = this._dataCall(url, function(json) {
+		this._dataRequest = this._dataCall(url, function(json) {//using always that inside function
 
 			that._dataRequest = null;
 
 			that.fire('dataloaded', {data: json});
-			
-			//TODO do not replace marker just loaded
-			that.clearLayers();
+			console.clear();
 
+			that.clearLayers();
 			for(var k in json)
-				that.addMarker.call(that, json[k] );
+			{
+				if(that.options.filter && !that.options.filter(data)) continue;
+				
+				cacheIndex = json[k].loc[0]+'_'+json[k].loc[1];
+				
+				if( !that._cacheData[cacheIndex] )//if not cached
+					that._cacheData[cacheIndex]= that.addMarker.call(that, json[k] );
+				else
+					that.addLayer(that._cacheData[cacheIndex]);
+			}
 		});
 	},
 
-//ajax jsonp methods
+/////////////////ajax jsonp methods
 
 	getAjax: function(url, cb) {	//default ajax request
 
