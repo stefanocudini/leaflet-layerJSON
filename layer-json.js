@@ -127,10 +127,14 @@ L.LayerJSON = L.FeatureGroup.extend({
 		return new L.Icon.Default();
 	},
 	
-	addNewMarker: function( data ) {
+//	dataToMarker: function(data) {
+//	//TODO	
+//	},
+	
+	addMarker: function(data) {
 		var latlng = data[ this.options.propertyLoc ],
 			title = data[ this.options.propertyTitle ],
-			//TODO check propertyLoc and propertyTitle in addNewMarker
+			//TODO check propertyLoc and propertyTitle in addMarker
 			icon = this._buildIcon(title, data),
 			markerOpts = L.Util.extend({icon: icon}, data),
 			marker = new L.Marker(latlng, markerOpts );
@@ -142,7 +146,7 @@ L.LayerJSON = L.FeatureGroup.extend({
 		
 		if(this.options.onEachMarker)
 			this.options.onEachMarker(marker, data);
-//console.log('addNewMarker '+idl+' '+ marker.options.id);
+//console.log('addMarker '+idl+' '+ marker.options.id);
 
 		this.addLayer(marker);
 	},
@@ -171,7 +175,7 @@ L.LayerJSON = L.FeatureGroup.extend({
 			that.clearLayers();
 
 			for(var k in json)
-				that.addNewMarker.call(that, json[k] );
+				that.addMarker.call(that, json[k] );
 		});
 	},
 
