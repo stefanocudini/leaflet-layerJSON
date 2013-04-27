@@ -34,7 +34,7 @@ L.LayerJSON = L.FeatureGroup.extend({
 		optsPopup: null,			//popup options
 		buildIcon: null,			//function icon builder
 		minShift: 8000,				//min shift for update data(in meters)
-		cache: false,				//caching marker, indexing by latlng
+		cache: true,				//caching marker, indexing by latlng
 		attribution: ''				//attribution text
 	},
     
@@ -176,19 +176,25 @@ L.LayerJSON = L.FeatureGroup.extend({
 			that._dataRequest = null;
 
 			that.fire('dataloaded', {data: json});
-			console.clear();
+			//console.clear();
 
 			that.clearLayers();
 			for(var k in json)
 			{
 				if(that.options.filter && !that.options.filter(data)) continue;
 				
-				cacheIndex = json[k].loc[0]+'_'+json[k].loc[1];
-				
-				if( !that._cacheData[cacheIndex] )//if not cached
-					that._cacheData[cacheIndex]= that.addMarker.call(that, json[k] );
+				if(that.options.cache)
+				{
+					cacheIndex = json[k][that.options.propertyLoc][0]+'_'+json[k][that.options.propertyLoc][1];
+
+					if( !that._cacheData[cacheIndex] )//if not cached
+						that._cacheData[cacheIndex]= that.addMarker.call(that, json[k] );
+						//TODO replace with dataToMarker() when implemented
+					else
+						that.addLayer( that._cacheData[cacheIndex] );
+				}
 				else
-					that.addLayer(that._cacheData[cacheIndex]);
+					that.addMarker.call(that, json[k] );
 			}
 		});
 	},
