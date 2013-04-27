@@ -6,6 +6,10 @@ What
 
 A generic Leaflet Layer that load JSON data in layer in the form of markers with attributes
 
+Simple way for transform JSON data in Leaflet Layer!
+
+and minimize data requests when browse map
+
 Tested in Leaflet 0.5
 
 How
