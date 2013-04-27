@@ -27,6 +27,7 @@ L.LayerJSON = L.FeatureGroup.extend({
 		dataCall: null,				//alternative function that return data (if use $.ajax() set async=false)
 		propertyLoc: 'loc', 		//json property used as Latlng of marker
 		propertyTitle: 'title', 	//json property used as title(popup, marker, icon)
+		filter: null,				//function that will be used to decide whether to add or not marker, run before onEachMarker
 		onEachMarker: null,			//function called on each marker created, similar to option onEachFeature of L.GeoJSON
 		layerTarget: null,			//pre-existing layer for contents(it is a FeatureGroup o LayerGroup)
 		buildPopup: null,			//function popup builder
@@ -132,6 +133,10 @@ L.LayerJSON = L.FeatureGroup.extend({
 //	},
 	
 	addMarker: function(data) {
+	
+		if(this.options.filter && !this.options.filter(data))
+			return false;
+		
 		var latlng = data[ this.options.propertyLoc ],
 			title = data[ this.options.propertyTitle ],
 			//TODO check propertyLoc and propertyTitle in addMarker
