@@ -19,8 +19,6 @@ L.LayerJSON = L.FeatureGroup.extend({
 	//  dataloading		{url}			fired before ajax/jsonp reques(useful for show gif loader)
 	//	dataloaded		{data}			fired on ajax/jsonp request success
 	//
-	
-	//TODO implement markers caching using index: lat+''+lng
 	options: {
 		url: 'search.php?lat1={minlat}&lat2={maxlat}&lon1={minlon}&lon2={maxlon}',
 		jsonpParam: null,			//callback parameter name for jsonp request append to url
