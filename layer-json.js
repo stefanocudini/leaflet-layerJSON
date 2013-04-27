@@ -16,7 +16,6 @@ L.LayerJSON = L.FeatureGroup.extend({
 	//
 	//Managed Events:
 	//	Event			Data passed		Description
-	//	markercreated	{marker}		fired after new marker(and his popup) is created, but before added on the layer
 	//  dataloading		{url}			fired before ajax/jsonp reques(useful for show gif loader)
 	//	dataloaded		{data}			fired on ajax/jsonp request success
 	//
@@ -28,12 +27,12 @@ L.LayerJSON = L.FeatureGroup.extend({
 		dataCall: null,				//alternative function that return data (if use $.ajax() set async=false)
 		propertyLoc: 'loc', 		//json property used as Latlng of marker
 		propertyTitle: 'title', 	//json property used as title(popup, marker, icon)
+		onEachMarker: null,			//function called on each marker created, similar to option onEachFeature of L.GeoJSON
 		layerTarget: null,			//pre-existing layer for contents(it is a FeatureGroup o LayerGroup)
-		oneUpdate: false,			//request data only at startup
 		buildPopup: null,			//function popup builder
 		optsPopup: null,			//popup options
 		buildIcon: null,			//function icon builder
-		minMoveDistance: 8000,		//min shift for update data(in meters)
+		minShift: 8000,				//min shift for update data(in meters)
 		attribution: ''				//attribution text
 	},
     
@@ -59,14 +58,12 @@ L.LayerJSON = L.FeatureGroup.extend({
 		L.FeatureGroup.prototype.onAdd.call(this, map);		//set this._map
 		this._center = map.getCenter();
 
-		if(this.options.oneUpdate===false)
-			map.on('moveend', function(e) {
-				if( this._center.distanceTo( map.getCenter()) < this.options.minMoveDistance )
-					return false;
-				this._center = map.getCenter();
-				this.update();
-			}, this);
-			//TODO add option min shift
+		map.on('moveend', function(e) {
+			if( this._center.distanceTo( map.getCenter()) < this.options.minShift )
+				return false;
+			this._center = map.getCenter();
+			this.update();
+		}, this);
 			
 		this.update();
 	},
@@ -141,20 +138,16 @@ L.LayerJSON = L.FeatureGroup.extend({
 		var idl = L.stamp(marker);
 		//console.log(idl,data.nome);
 		
-		marker.bindPopup( this._buildPopup( marker, data ), this.options.optsPopup );
+		marker.bindPopup( this._buildPopup(marker, data), this.options.optsPopup );
 		
-		this.fire('markercreated', {marker: marker});
-
+		if(this.options.onEachMarker)
+			this.options.onEachMarker(marker, data);
 //console.log('addNewMarker '+idl+' '+ marker.options.id);
 
 		this.addLayer(marker);
 	},
     
 	update: function(e) {		//populate layer
-	
-	//console.info('update');
-	//console.log(arguments);
-	//TODO implement check minimun shift for new request!
 	
 		var bb = this._map.getBounds(),
 			sw = bb.getSouthWest(),
@@ -181,6 +174,8 @@ L.LayerJSON = L.FeatureGroup.extend({
 				that.addNewMarker.call(that, json[k] );
 		});
 	},
+
+//ajax jsonp methods
 
 	getAjax: function(url, cb) {	//default ajax request
 
