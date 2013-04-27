@@ -29,7 +29,7 @@ L.LayerJSON = L.FeatureGroup.extend({
 		propertyTitle: 'title', 	//json property used as title(popup, marker, icon)
 		filter: null,				//function that will be used to decide whether to add or not marker, run before onEachMarker
 		onEachMarker: null,			//function called on each marker created, similar to option onEachFeature of L.GeoJSON
-		layerTarget: null,			//pre-existing layer for contents(it is a FeatureGroup o LayerGroup)
+		layerTarget: null,			//pre-existing layer for contents, is a LayerGroup or L.MarkerClusterGroup http://goo.gl/tvmu0
 		buildPopup: null,			//function popup builder
 		optsPopup: null,			//popup options
 		buildIcon: null,			//function icon builder
