@@ -10,7 +10,8 @@ body {
 	color:#669;
 	margin:20px;
 }
-h3,h4,h5 {margin:10px 0 0 0}
+h2,h4,h5 {margin:6px 0 0 0}
+p {margin:0 0 20px 0}
 ul {
 	font-size:.85em;
 	margin:0;
@@ -22,14 +23,14 @@ li {
 #map {
 	border:2px solid #669;
 	width:600px;
-	height:400px;
+	height:380px;
 	float:left;
 }
 #data {
 	display:block;
 	float:left;
 	width:220px;
-	height:400px;
+	height:380px;
 	background:#eee;
 	border:2px solid #ccc;
 	padding:2px;
@@ -64,14 +65,14 @@ li {
 </head>
 
 <body>
-<h3><a href="../">Leaflet Generic JSON Layer</a></h3>
-<p>Simple way for transform JSON data in Leaflet Layer!<br />
-<i>and minimize data requests when browse map</i>
-</p>
+<h2><img src="jsonlayer.png" /> Leaflet Generic JSON Layer</a></h2>
+<p> Simple way for transform JSON data in Leaflet Layer!</p>
+
 <div id="content">
 	<h4>Features</h4>
 	<ul id="ff">
 		<li>Load <strong>JSON</strong> data via <strong>AJAX,JSONP</strong> or custom function</li>
+		<li>Minimize requests while browsing map</li>
 		<li>Filter JSON data from <strong>third-party jsonp services</strong></li>
 		<li><strong>Pre-Filter</strong> data before add markers</li>
 		<li>Apply custom function on each marker added</li>
