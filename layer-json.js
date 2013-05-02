@@ -216,16 +216,20 @@ L.LayerJSON = L.FeatureGroup.extend({
 				}
 			};
 		}
-		var request = new XMLHttpRequest(),
-			response = {};
-
-		request.open("GET", url);
+		var request = new XMLHttpRequest();
+		request.open('GET', url);
 		request.onreadystatechange = function() {
+			var response = {};
 		    if (request.readyState === 4 && request.status === 200) {
-		    	if(window.JSON) {
-		            response = JSON.parse(request.responseText);
-		    	} else {
-		    		response = eval("("+ request.responseText + ")");
+		    	try {
+					if(window.JSON) {
+				        response = JSON.parse(request.responseText);
+					} else {
+						response = eval("("+ request.responseText + ")");
+					}
+		    	} catch(err) {
+		    		console.info(err);
+		    		response = {};
 		    	}
 		        cb(response);
 		    }
