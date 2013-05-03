@@ -26,8 +26,9 @@ L.LayerJSON = L.FeatureGroup.extend({
 		propertyLoc: 'loc', 		//json property used as Latlng of marker
 		propertyTitle: 'title', 	//json property used as title(popup, marker, icon)
 		filter: null,				//function that will be used to decide whether to add or not marker, run before onEachMarker
+		dataToMarker: null,			//function that will be used for creating markers from json points, similar to pointToLayer of L.GeoJSON
 		onEachMarker: null,			//function called on each marker created, similar to option onEachFeature of L.GeoJSON
-		layerTarget: null,			//pre-existing layer for contents, is a LayerGroup or L.MarkerClusterGroup http://goo.gl/tvmu0
+		layerTarget: null,			//pre-existing layer to add markers, is a LayerGroup or L.MarkerClusterGroup http://goo.gl/tvmu0
 		buildPopup: null,			//function popup builder
 		optsPopup: null,			//popup options
 		buildIcon: null,			//function icon builder
@@ -39,9 +40,11 @@ L.LayerJSON = L.FeatureGroup.extend({
 	initialize: function(options) {			
 		L.FeatureGroup.prototype.initialize.call(this, []);
 		L.Util.setOptions(this, options);
-		this._buildPopup = this.options.buildPopup || this._defaultBuildPopup;
+		this._dataToMarker = this.options.dataToMarker || this._defaultDataToMarker;
 		this._buildIcon = this.options.buildIcon || this._defaultBuildIcon;
-		this._dataRequest = null;		
+		this._buildPopup = this.options.buildPopup || this._defaultBuildPopup;
+		//custom builders
+		this._dataRequest = null;
 		this._dataUrl = this.options.url;
 		this._center = null;
 		if(this.options.jsonpParam)
@@ -110,7 +113,7 @@ L.LayerJSON = L.FeatureGroup.extend({
 		return this;
 	},
 	
-	_defaultBuildPopup: function(marker, data) {	//default popup builder
+	_defaultBuildPopup: function(data, marker) {	//default popup builder
 		var html = '';
 		
 		if(data.hasOwnProperty(this.options.propertyTitle))
@@ -125,29 +128,28 @@ L.LayerJSON = L.FeatureGroup.extend({
 		return html;
 	},
 	
-	_defaultBuildIcon: function() {
+	_defaultBuildIcon: function(data, title) {
 		return new L.Icon.Default();
 	},
 	
-//	dataToMarker: function(data) {
-//	//TODO	
-//	},
+	_defaultDataToMarker: function(data, latlng) {
+
+		var title = data[ this.options.propertyTitle ],
+			//TODO check propertyLoc and propertyTitle in addMarker
+			markerOpts = L.Util.extend({icon: this._buildIcon(data,title) }, data);
+			
+		return new L.Marker(latlng, markerOpts );
+	},
 	
 	addMarker: function(data) {
 		
 		var latlng = data[ this.options.propertyLoc ],
-			title = data[ this.options.propertyTitle ],
-			//TODO check propertyLoc and propertyTitle in addMarker
-			icon = this._buildIcon(title, data),
-			markerOpts = L.Util.extend({icon: icon}, data),
-			marker = new L.Marker(latlng, markerOpts );
+			marker = this._dataToMarker(data, latlng);
 		
-		marker.bindPopup( this._buildPopup(marker, data), this.options.optsPopup );
+		marker.bindPopup(this._buildPopup(data, marker), this.options.optsPopup );
 		
 		if(this.options.onEachMarker)
-			this.options.onEachMarker(marker, data);
-
-		//console.log('addMarker '+ marker.options.id);
+			this.options.onEachMarker(data, marker);
 
 		this.addLayer(marker);
 
@@ -184,6 +186,7 @@ L.LayerJSON = L.FeatureGroup.extend({
 				if(that.options.cache)
 				{
 					cacheIndex = json[k][that.options.propertyLoc][0]+'_'+json[k][that.options.propertyLoc][1];
+					//TODO additional var for build cacheIndex, now rewrite marker with same loc
 
 					if( !that._cacheData[cacheIndex] )//if not cached
 						that._cacheData[cacheIndex]= that.addMarker.call(that, json[k] );
