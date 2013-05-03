@@ -33,6 +33,7 @@ L.LayerJSON = L.FeatureGroup.extend({
 		optsPopup: null,			//popup options
 		buildIcon: null,			//function icon builder
 		minShift: 8000,				//min shift for update data(in meters)
+		precision: 6,				//number of digit send to server for lat,lng precision
 		cache: true,				//caching marker, indexing by latlng
 		attribution: ''				//attribution text
 	},
@@ -163,7 +164,9 @@ L.LayerJSON = L.FeatureGroup.extend({
 			ne = bb.getNorthEast(),
 			//aggiungi margine bbox piu piccolo della mappa
 			//TODO coords sended precision .toFixed(6)
-			url = L.Util.template(this._dataUrl, {minlat: sw.lat, maxlat: ne.lat, minlon: sw.lng, maxlon: ne.lng}),
+			p = this.options.precision,
+			url = L.Util.template(this._dataUrl, {minlat: sw.lat.toFixed(p), maxlat: ne.lat.toFixed(p), 
+												  minlon: sw.lng.toFixed(p), maxlon: ne.lng.toFixed(p)}),
 			cacheIndex = '';
 
 		if(this._dataRequest)
