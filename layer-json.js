@@ -46,6 +46,7 @@ L.LayerJSON = L.FeatureGroup.extend({
 		this._dataRequest = null;
 		this._dataUrl = this.options.url;
 		this._center = null;
+		this._bounds = null;
 		if(this.options.jsonpParam)
 		{
 			this._dataUrl += '&'+this.options.jsonpParam+'=';
@@ -60,6 +61,7 @@ L.LayerJSON = L.FeatureGroup.extend({
 		
 		L.FeatureGroup.prototype.onAdd.call(this, map);		//set this._map
 		this._center = map.getCenter();
+		this._bounds = map.getBounds();
 
 		map.on('moveend', this._onMove, this);
 			
@@ -137,12 +139,20 @@ L.LayerJSON = L.FeatureGroup.extend({
 	},
 	
 	_onMove: function(e) {
-		//TODO implement cache that update when last bounds is incremented
 
-		if( this._center.distanceTo( map.getCenter()) < this.options.minShift )
+		var newCenter = map.getCenter(),
+			newBounds = map.getBounds();
+
+		if( this._center.distanceTo(newCenter) < this.options.minShift )
 			return false;
-		this._center = map.getCenter();
+		else
+			this._center = newCenter;
 
+		if( this._bounds.contains(newBounds) )//bounds is incremented
+			return false;
+		else
+			this._bounds.extend(newBounds);
+		
 		this.update();
 	},
 	
@@ -175,7 +185,7 @@ L.LayerJSON = L.FeatureGroup.extend({
 			{
 				if(that.options.filter && !that.options.filter(data)) continue;
 				
-				if(that.options.cache)//TODO move outside for
+				if(that.options.cache)//TODO move outside of 'for'
 				{
 					cacheIndex = json[k][that.options.propertyLoc][0]+'_'+json[k][that.options.propertyLoc][1];
 					//TODO additional var for build cacheIndex, now rewrite marker with same loc
