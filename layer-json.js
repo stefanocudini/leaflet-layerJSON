@@ -141,8 +141,8 @@ L.LayerJSON = L.FeatureGroup.extend({
 	
 	_onMove: function(e) {
 
-		var newCenter = map.getCenter(),
-			newBounds = map.getBounds();
+		var newCenter = this._map.getCenter(),
+			newBounds = this._map.getBounds();
 
 		if( this.options.minShift && this._center.distanceTo(newCenter) < this.options.minShift )
 			return false;
