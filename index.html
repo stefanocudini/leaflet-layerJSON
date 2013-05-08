@@ -26,17 +26,25 @@ li {
 	height:380px;
 	float:left;
 }
+#arrow {
+	display: block;
+	line-height: 380px;
+	font-size: 80px;
+	float: left;
+	text-align: center;
+	width: 50px;
+}
 #data {
 	display:block;
 	float:left;
 	width:220px;
 	height:380px;
 	background:#eee;
-	border:2px solid #ccc;
+	border:2px solid #669;
 	padding:2px;
 	font-size:.85em;
-	margin: 0 20px;
 	overflow:scroll;
+	margin:0;
 }
 #content,#refs {
 	float:left;
@@ -60,6 +68,14 @@ li {
 }
 #comments {
 	clear:both;
+}
+pre {
+	background-color: #eee;
+	color:#888;
+	line-height: 1.5em;
+	padding:4px;
+	border:2px solid #ccc;
+	float: left;
 }
 </style>
 </head>
@@ -100,11 +116,17 @@ li {
 </div>
 
 <div style="clear:both">
-	<h4>Ajax demo:</h4>
-	<div id="map"></div>
-	<pre id="data"></pre>	
+	<h4>Simple Ajax Demo:</h4>
+<pre>
+var ajaxUrl = "search.php?lat1={minlat}&lat2={maxlat}&lon1={minlon}&lon2={maxlon}";
+map.addLayer( new L.LayerJSON({url: ajaxUrl }) );
+</pre>
 </div>
-
+<div style="clear:both">
+	<pre id="data"></pre>	
+	<div id="arrow">⟩</div>
+	<div id="map"></div>
+</div>
 <script src="/leaflet/leaflet.js"></script>
 <script src="layer-json.js"></script>
 <script>
