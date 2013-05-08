@@ -22,7 +22,7 @@ L.LayerJSON = L.FeatureGroup.extend({
 	options: {
 		url: 'search.php?lat1={minlat}&lat2={maxlat}&lon1={minlon}&lon2={maxlon}',
 		jsonpParam: null,			//callback parameter name for jsonp request append to url
-		dataCall: null,				//alternative function that return data (if use $.ajax() set async=false)
+		callData: null,				//alternative function that return data (if use $.ajax() set async=false)
 		propertyLoc: 'loc', 		//json property used as Latlng of marker
 		propertyTitle: 'title', 	//json property used as title(popup, marker, icon)
 		filter: null,				//function that will be used to decide whether to add or not marker, run before onEachMarker
@@ -49,10 +49,10 @@ L.LayerJSON = L.FeatureGroup.extend({
 		if(this.options.jsonpParam)
 		{
 			this._dataUrl += '&'+this.options.jsonpParam+'=';
-			this._dataCall = this.getJsonp;
+			this._callData = this.getJsonp;
 		}
 		else
-			this._dataCall = this.options.dataCall || this.getAjax;
+			this._callData = this.options.callData || this.getAjax;
 		this._cacheData = {};//used for caching
 	},
 
@@ -158,7 +158,7 @@ L.LayerJSON = L.FeatureGroup.extend({
 
 		var that = this;
 		that.fire('dataloading', {url: url});		
-		this._dataRequest = this._dataCall(url, function(json) {//using always that inside function
+		this._dataRequest = this._callData(url, function(json) {//using always that inside function
 
 			that._dataRequest = null;
 
