@@ -33,6 +33,7 @@ L.LayerJSON = L.FeatureGroup.extend({
 		optsPopup: null,			//popup options
 		buildIcon: null,			//function icon builder
 		minShift: 8000,				//min shift for update data(in meters)
+		updateOutBounds: true,		//request new data only if current bounds higher than last bounds
 		precision: 6,				//number of digit send to server for lat,lng precision
 		cache: true,				//caching marker, indexing by latlng
 		attribution: ''				//attribution text
@@ -143,13 +144,13 @@ L.LayerJSON = L.FeatureGroup.extend({
 		var newCenter = map.getCenter(),
 			newBounds = map.getBounds();
 
-		if( this._center.distanceTo(newCenter) < this.options.minShift )
+		if( this.options.minShift && this._center.distanceTo(newCenter) < this.options.minShift )
 			return false;
 		else
 			this._center = newCenter;
 
-		if( this._bounds.contains(newBounds) )//bounds is incremented
-			return false;
+		if( this.options.updateOutBounds && this._bounds.contains(newBounds) )
+			return false;	//bounds not incremented
 		else
 			this._bounds.extend(newBounds);
 		
