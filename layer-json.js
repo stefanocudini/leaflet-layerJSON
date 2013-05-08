@@ -43,8 +43,6 @@ L.LayerJSON = L.FeatureGroup.extend({
 		L.Util.setOptions(this, options);
 		this._dataToMarker = this.options.dataToMarker || this._defaultDataToMarker;
 		this._buildIcon = this.options.buildIcon || this._defaultBuildIcon;
-		this._buildPopup = this.options.buildPopup || this._defaultBuildPopup;
-		//custom builders
 		this._dataRequest = null;
 		this._dataUrl = this.options.url;
 		this._center = null;
@@ -114,21 +112,6 @@ L.LayerJSON = L.FeatureGroup.extend({
 		return this;
 	},
 	
-	_defaultBuildPopup: function(data, marker) {	//default popup builder
-		var html = '';
-		
-		if(data.hasOwnProperty(this.options.propertyTitle))
-		{
-			html += '<h4>'+ data[this.options.propertyTitle] +'</h4>';
-			delete data[this.options.propertyTitle];
-		}
-		data[this.options.propertyLoc] = data[this.options.propertyLoc].join();
-		for(var i in data)
-			html += '<b>'+i+':</b> '+data[i]+'<br>';
-		
-		return html;
-	},
-	
 	_defaultBuildIcon: function(data, title) {
 		return new L.Icon.Default();
 	},
@@ -146,8 +129,9 @@ L.LayerJSON = L.FeatureGroup.extend({
 		
 		var latlng = data[ this.options.propertyLoc ],
 			marker = this._dataToMarker(data, latlng);
-		
-		marker.bindPopup(this._buildPopup(data, marker), this.options.optsPopup );
+
+		if(this.options.buildPopup)
+			marker.bindPopup(this.options.buildPopup(data, marker), this.options.optsPopup );
 		
 		if(this.options.onEachMarker)
 			this.options.onEachMarker(data, marker);
@@ -186,7 +170,7 @@ L.LayerJSON = L.FeatureGroup.extend({
 			{
 				if(that.options.filter && !that.options.filter(data)) continue;
 				
-				if(that.options.cache)
+				if(that.options.cache)//TODO move outside for
 				{
 					cacheIndex = json[k][that.options.propertyLoc][0]+'_'+json[k][that.options.propertyLoc][1];
 					//TODO additional var for build cacheIndex, now rewrite marker with same loc
