@@ -61,19 +61,14 @@ L.LayerJSON = L.FeatureGroup.extend({
 		L.FeatureGroup.prototype.onAdd.call(this, map);		//set this._map
 		this._center = map.getCenter();
 
-		map.on('moveend', function(e) {
-			if( this._center.distanceTo( map.getCenter()) < this.options.minShift )
-				return false;
-			this._center = map.getCenter();
-			this.update();
-		}, this);
+		map.on('moveend', this._onMove, this);
 			
 		this.update();
 	},
     
 	onRemove: function(map) { //console.info('onRemove');
 		
-		map.off('moveend', this.update, this); //FIXME not work!
+		map.off('moveend', this._onMove, this); //FIXME not work!
 		
 		L.FeatureGroup.prototype.onRemove.call(this, map);	
 
@@ -83,7 +78,7 @@ L.LayerJSON = L.FeatureGroup.extend({
 			}
 		}		
 	},
-	
+
 	getAttribution: function() {
 		return this.options.attribution;
 	},
@@ -140,7 +135,17 @@ L.LayerJSON = L.FeatureGroup.extend({
 
 		return marker;
 	},
-    
+	
+	_onMove: function(e) {
+		//TODO implement cache that update when last bounds is incremented
+
+		if( this._center.distanceTo( map.getCenter()) < this.options.minShift )
+			return false;
+		this._center = map.getCenter();
+
+		this.update();
+	},
+	
 	update: function(e) {		//populate target layer
 	
 		var bb = this._map.getBounds(),
