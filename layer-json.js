@@ -24,8 +24,9 @@ L.LayerJSON = L.FeatureGroup.extend({
 		jsonpParam: null,			//callback parameter name for jsonp request append to url
 		callData: null,				//alternative function that return data (if use $.ajax() set async=false)
 		propertyLoc: 'loc', 		//json property used as Latlng of marker
+		//TODO supporting lat,lng fields like L.Control.Search
 		propertyTitle: 'title', 	//json property used as title(popup, marker, icon)
-		filter: null,				//function that will be used to decide whether to add or not marker, run before onEachMarker
+		filter: null,				//function that filter marker by its data, run before onEachMarker
 		dataToMarker: null,			//function that will be used for creating markers from json points, similar to pointToLayer of L.GeoJSON
 		onEachMarker: null,			//function called on each marker created, similar to option onEachFeature of L.GeoJSON
 		layerTarget: null,			//pre-existing layer to add markers, is a LayerGroup or L.MarkerClusterGroup http://goo.gl/tvmu0
@@ -35,7 +36,6 @@ L.LayerJSON = L.FeatureGroup.extend({
 		minShift: 8000,				//min shift for update data(in meters)
 		updateOutBounds: true,		//request new data only if current bounds higher than last bounds
 		precision: 6,				//number of digit send to server for lat,lng precision
-		cache: true,				//caching marker, indexing by latlng
 		attribution: ''				//attribution text
 	},
     
@@ -44,10 +44,12 @@ L.LayerJSON = L.FeatureGroup.extend({
 		L.Util.setOptions(this, options);
 		this._dataToMarker = this.options.dataToMarker || this._defaultDataToMarker;
 		this._buildIcon = this.options.buildIcon || this._defaultBuildIcon;
+		this._filterMarker = this.options.filter || function(){ return true; };
 		this._dataRequest = null;
 		this._dataUrl = this.options.url;
 		this._center = null;
-		this._bounds = null;
+		this._maxBounds = null;
+		this._markers = {};	//used for caching _dataToMarker builds
 		if(this.options.jsonpParam)
 		{
 			this._dataUrl += '&'+this.options.jsonpParam+'=';
@@ -55,14 +57,13 @@ L.LayerJSON = L.FeatureGroup.extend({
 		}
 		else
 			this._callData = this.options.callData || this.getAjax;
-		this._cacheData = {};//used for caching
 	},
 
 	onAdd: function(map) { //console.info('onAdd');
 		
 		L.FeatureGroup.prototype.onAdd.call(this, map);		//set this._map
 		this._center = map.getCenter();
-		this._bounds = map.getBounds();
+		this._maxBounds = map.getBounds();
 
 		map.on('moveend', this._onMove, this);
 			
@@ -79,7 +80,7 @@ L.LayerJSON = L.FeatureGroup.extend({
 			if (this._layers.hasOwnProperty(i)) {
 				L.FeatureGroup.prototype.removeLayer.call(this, this._layers[i]);
 			}
-		}		
+		}
 	},
 
 	getAttribution: function() {
@@ -114,29 +115,31 @@ L.LayerJSON = L.FeatureGroup.extend({
 		return new L.Icon.Default();
 	},
 	
-	_defaultDataToMarker: function(data, latlng) {
+	_defaultDataToMarker: function(data, latlng) {	//make marker from data
 
 		var title = data[ this.options.propertyTitle ],
 			//TODO check propertyLoc and propertyTitle in addMarker
-			markerOpts = L.Util.extend({icon: this._buildIcon(data,title) }, data);
-			
-		return new L.Marker(latlng, markerOpts );
+			markerOpts = L.Util.extend({icon: this._buildIcon(data,title) }, data),
+			marker = new L.Marker(latlng, markerOpts );
+		
+		if(this.options.buildPopup)
+			marker.bindPopup(this.options.buildPopup(data, marker), this.options.optsPopup );
+		
+		return marker;
 	},
 	
 	addMarker: function(data) {
 		
-		var latlng = data[ this.options.propertyLoc ],
-			marker = this._dataToMarker(data, latlng);
+		var latlng = data[this.options.propertyLoc],
+			hash = latlng.join() + data[this.options.propertyTitle];
 
-		if(this.options.buildPopup)
-			marker.bindPopup(this.options.buildPopup(data, marker), this.options.optsPopup );
-		
-		if(this.options.onEachMarker)
-			this.options.onEachMarker(data, marker);
+		if(!this._markers[hash])
+			this._markers[hash] = this._dataToMarker(data, latlng);
 
-		this.addLayer(marker);
+		if(this.options.onEachMarker)//maybe useless
+			this.options.onEachMarker(data, this._markers[hash]);
 
-		return marker;
+		this.addLayer( this._markers[hash] );
 	},
 	
 	_onMove: function(e) {
@@ -149,59 +152,46 @@ L.LayerJSON = L.FeatureGroup.extend({
 		else
 			this._center = newCenter;
 
-		if( this.options.updateOutBounds && this._bounds.contains(newBounds) )
+		if( this.options.updateOutBounds && this._maxBounds.contains(newBounds) )
 			return false;	//bounds not incremented
 		else
-			this._bounds.extend(newBounds);
+			this._maxBounds.extend(newBounds);
 		
 		this.update();
 	},
 	
-	update: function(e) {		//populate target layer
+	update: function(clear) {	//populate target layer
 	
-		var bb = this._map.getBounds(),
+		var //clear = clear || false,
+			bb = this._map.getBounds(),
 			sw = bb.getSouthWest(),
 			ne = bb.getNorthEast(),
-			//aggiungi margine bbox piu piccolo della mappa
-			//TODO coords sended precision .toFixed(6)
+			//TODO send map bounds decremented
 			p = this.options.precision,
-			url = L.Util.template(this._dataUrl, {minlat: sw.lat.toFixed(p), maxlat: ne.lat.toFixed(p), 
-												  minlon: sw.lng.toFixed(p), maxlon: ne.lng.toFixed(p)}),
-			cacheIndex = '';
+			url = L.Util.template(this._dataUrl, {
+					minlat: sw.lat.toFixed(p), maxlat: ne.lat.toFixed(p), 
+					minlon: sw.lng.toFixed(p), maxlon: ne.lng.toFixed(p)
+				});
 
 		if(this._dataRequest)
-			this._dataRequest.abort();	//block last data request
+			this._dataRequest.abort();	//prevent parallel requests
 
 		var that = this;
-		that.fire('dataloading', {url: url});		
+		that.fire('dataloading', {url: url});	
 		this._dataRequest = this._callData(url, function(json) {//using always that inside function
 
 			that._dataRequest = null;
 
 			that.fire('dataloaded', {data: json});
-			//console.clear();
-
+			
 			that.clearLayers();
 			for(var k in json)
-			{
-				if(that.options.filter && !that.options.filter(data)) continue;
-				
-				if(that.options.cache)//TODO move outside of 'for'
-				{
-					cacheIndex = json[k][that.options.propertyLoc][0]+'_'+json[k][that.options.propertyLoc][1];
-					//TODO additional var for build cacheIndex, now rewrite marker with same loc
-
-					if( !that._cacheData[cacheIndex] )//if not cached
-						that._cacheData[cacheIndex]= that.addMarker.call(that, json[k] );
-						//TODO replace with dataToMarker() when implemented
-					else
-						that.addLayer( that._cacheData[cacheIndex] );
-				}
-				else
-					that.addMarker.call(that, json[k] );
-			}
+				if(that._filterMarker(json[k]))
+					that.addMarker.call(that, json[k]);
 		});
 	},
+
+
 
 /////////////////ajax jsonp methods
 
@@ -247,7 +237,7 @@ L.LayerJSON = L.FeatureGroup.extend({
 	getJsonp: function(url, cb) {  //extract searched records from remote jsonp service
 		var body = document.getElementsByTagName('body')[0],
 			script = L.DomUtil.create('script','layerjson-jsonp', body );
-
+		
 		L.LayerJSON.callJsonp = function(data) {	//jsonp callback
 			//TODO data = filterJSON.apply(that,[data]);
 			cb(data);
@@ -255,7 +245,8 @@ L.LayerJSON = L.FeatureGroup.extend({
 		}
 		script.type = 'text/javascript';
 		script.src = url+'L.LayerJSON.callJsonp';
-	}	
+		return {abort: function() { script.parentNode.removeChild(script); } };
+	}
 });
 
 }).call(this);
