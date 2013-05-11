@@ -129,7 +129,8 @@ L.LayerJSON = L.FeatureGroup.extend({
 	},
 	
 	addMarker: function(data) {
-		
+		//TODO empty this._markers sooner or later
+
 		var latlng = data[this.options.propertyLoc],
 			hash = latlng.join() + data[this.options.propertyTitle];
 
@@ -140,6 +141,14 @@ L.LayerJSON = L.FeatureGroup.extend({
 			this.options.onEachMarker(data, this._markers[hash]);
 
 		this.addLayer( this._markers[hash] );
+	},
+
+	_updateMarkersCached: function(bounds) {
+		for(var i in this._markers)
+			if( bounds.contains(this._markers[i].getLatLng()) )
+				this.addLayer(this._markers[i]);
+			else
+				this.removeLayer(this._markers[i]);
 	},
 	
 	_onMove: function(e) {
@@ -152,8 +161,11 @@ L.LayerJSON = L.FeatureGroup.extend({
 		else
 			this._center = newCenter;
 
-		if( this.options.updateOutBounds && this._maxBounds.contains(newBounds) )
-			return false;	//bounds not incremented
+		if( this.options.updateOutBounds && this._maxBounds.contains(newBounds) )//bounds not incremented
+		{
+			this._updateMarkersCached(newBounds);
+			return false;
+		}
 		else
 			this._maxBounds.extend(newBounds);
 		
