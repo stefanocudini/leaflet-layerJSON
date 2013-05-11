@@ -196,7 +196,7 @@ L.LayerJSON = L.FeatureGroup.extend({
 
 			that.fire('dataloaded', {data: json});
 			
-			that.clearLayers();
+			//that.clearLayers();
 			for(var k in json)
 				if(that._filterMarker(json[k]))
 					that.addMarker.call(that, json[k]);
