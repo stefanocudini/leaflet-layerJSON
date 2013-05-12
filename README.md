@@ -12,6 +12,12 @@ and minimize data requests when browse map
 
 Tested in Leaflet 0.5
 
+
+Demos:
+------
+http://labs.easyblog.it/maps/leaflet-layerjson
+
+
 How
 ------
 
@@ -30,9 +36,3 @@ Source code:
 https://github.com/stefanocudini/leaflet-layerJSON
 
 https://bitbucket.org/zakis_/leaflet-layerJSON
-
-
-Demos:
-
-http://labs.easyblog.it/maps/leaflet-layerjson
-
