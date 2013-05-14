@@ -89,7 +89,10 @@ L.LayerJSON = L.FeatureGroup.extend({
 
 	addLayer: function (layer) {
 		if(this.options.layerTarget)
+		{
 			this.options.layerTarget.addLayer.call(this.options.layerTarget, layer);
+			return this.fire('layeradd', {layer: layer});
+		}
 		else
 			L.FeatureGroup.prototype.addLayer.call(this, layer);
 		return this;
@@ -97,7 +100,10 @@ L.LayerJSON = L.FeatureGroup.extend({
 	
 	removeLayer: function (layer) {
 		if(this.options.layerTarget)
+		{
 			this.options.layerTarget.removeLayer.call(this.options.layerTarget, layer);
+			return this.fire('layerremove', {layer: layer});
+		}
 		else
 			L.FeatureGroup.prototype.removeLayer.call(this, layer);
 		return this;
@@ -164,6 +170,7 @@ L.LayerJSON = L.FeatureGroup.extend({
 		if( this.options.updateOutBounds && this._maxBounds.contains(newBounds) )//bounds not incremented
 		{
 			this._updateMarkersCached(newBounds);
+			//TODO maybe execute this ever
 			return false;
 		}
 		else
