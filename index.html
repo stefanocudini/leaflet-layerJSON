@@ -52,30 +52,40 @@ li {
 }
 #copy {
 	position:fixed;
-	top:-.85em;
-	right:3em;
-	color:#00c;
-	background:#fff;
-	border-radius:.5em;
-	box-shadow: 0 0 6px #888;	
-	padding:1em .5em .25em .5em;
-	z-index:4000;
-	font-size:small;
-	filter: alpha(opacity=70);
-	-khtml-opacity: .7;
-	-moz-opacity: .7;
-	opacity: .7;		
+	z-index:1000;
+	right:150px;
+	top:-6px;
+	font-style:italic;
+	font-size:.85em;
+	padding:5px 8px;
+	background: #ccc;
+	border: 2px solid #3e5585;		
+	border-radius:.7em;
+	opacity: 0.8;		
+}
+#copy a {
+	color:#285585
+}
+#ribbon {
+	position: absolute;
+	top: 0;
+	right: 0;
+	border: 0;
+	filter: alpha(opacity=80);
+	-khtml-opacity: .8;
+	-moz-opacity: .8;
+	opacity: .8;		
 }
 #comments {
 	clear:both;
 }
 pre {
-	background-color: #eee;
+	background-color: #fff;
 	color:#888;
 	line-height: 1.5em;
 	padding:4px;
-	border:2px solid #ccc;
 	float: left;
+	box-shadow:2px 2px 4px #ccc
 }
 </style>
 </head>
@@ -117,6 +127,7 @@ pre {
 </div>
 
 <div style="clear:both">
+<br />
 	<h4>Simple Ajax Demo:</h4>
 <pre>
 var ajaxUrl = "search.php?lat1={minlat}&lat2={maxlat}&lon1={minlon}&lon2={maxlon}";
@@ -153,7 +164,9 @@ map.addLayer( new L.LayerJSON({url: ajaxUrl }) );
 		
 </script>
 
-<div id="copy">powered by <a href="mailto:stefano.cudini@gmail.com">Stefano Cudini</a></div>
+<div id="copy"><a href="http://labs.easyblog.it/">Labs</a> &bull; <a href="http://labs.easyblog.it/stefano-cudini/">Stefano Cudini</a></div>
+<a href="https://github.com/stefanocudini/leaflet-layerJSON"><img id="ribbon" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"></a>
+
 <div id="comments">
 	<div id="disqus_thread"></div>
 </div>
