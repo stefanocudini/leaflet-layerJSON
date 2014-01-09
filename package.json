@@ -1,0 +1,33 @@
+{
+  "name": "leaflet-layerJSON",
+  "version": "0.1.0",
+  "description": "A generic Leaflet Layer that load/filter dinamically JSON data from Ajax/Jsonp, with requests caching",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:stefanocudini/leaflet-layerJSON.git"
+  },
+  "homepage": "http://labs.easyblog.it/maps/leaflet-layerjson/",
+  "author": {
+    "name": "Stefano Cudini",
+    "email": "stefano.cudini@gmail.com",
+    "url": "http://labs.easyblog.it/"
+  },
+  "license": "MIT",
+  "keywords": [
+    "gis",
+    "map",
+    "leaflet"
+  ],
+  "dependencies": {
+    "leaflet": "*"
+  },
+  "devDependencies": {
+    "grunt": "~0.4.2",
+    "grunt-cli": "~0.1.11",
+    "grunt-contrib-uglify": "~0.2.7",
+    "grunt-contrib-concat": "~0.3.0",
+    "grunt-contrib-clean": "~0.5.0",
+    "grunt-contrib-jshint": "~0.7.2",
+    "grunt-contrib-watch": "~0.5.3"
+  }
+}

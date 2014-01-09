@@ -1,0 +1,84 @@
+body {
+	background: #ddf;
+	color:#669;
+	margin:20px;
+}
+
+h2,h3,h4,h5 {margin:6px 0 0 0}
+a {text-decoration: none;}
+p {margin:0 0 20px 0}
+ul {
+	font-size:.85em;
+	margin:0;
+	padding:0;
+}
+li {
+	margin:0 0 2px 18px;
+}
+#map {
+	border:2px solid #669;
+	width:600px;
+	height:380px;
+	float:left;
+}
+#arrow {
+	display: block;
+	line-height: 380px;
+	font-size: 80px;
+	float: left;
+	text-align: center;
+	width: 50px;
+}
+#data {
+	display:block;
+	float:left;
+	width:220px;
+	height:380px;
+	background:#eee;
+	border:2px solid #669;
+	padding:2px;
+	font-size:.85em;
+	overflow:scroll;
+	margin:0;
+}
+#content,#refs {
+	float:left;
+	margin-right:1em;
+}
+#copy {
+	position:fixed;
+	z-index:1000;
+	right:150px;
+	top:-6px;
+	font-style:italic;
+	font-size:.85em;
+	padding:5px 8px;
+	background: #ccc;
+	border: 2px solid #3e5585;		
+	border-radius:.7em;
+	opacity: 0.8;		
+}
+#copy a {
+	color:#285585
+}
+#ribbon {
+	position: absolute;
+	top: 0;
+	right: 0;
+	border: 0;
+	filter: alpha(opacity=80);
+	-khtml-opacity: .8;
+	-moz-opacity: .8;
+	opacity: .8;		
+}
+#comments {
+	clear:both;
+}
+pre {
+	background-color: #fff;
+	color:#888;
+	line-height: 1.5em;
+	padding:4px;
+	float: left;
+	box-shadow:2px 2px 4px #ccc
+}

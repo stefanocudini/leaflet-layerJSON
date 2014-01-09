@@ -1,97 +1,14 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"> 
 <html xmlns="http://www.w3.org/1999/xhtml"> 
 <head> 
-<title>Leaflet Generic JSON Layer</title> 
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" /> 
-<link rel="stylesheet" href="/maps/leaflet/dist/leaflet.css" />
-<style>
-body {
-	background: #ddf;
-	color:#669;
-	margin:20px;
-}
-h2,h4,h5 {margin:6px 0 0 0}
-p {margin:0 0 20px 0}
-ul {
-	font-size:.85em;
-	margin:0;
-	padding:0;
-}
-li {
-	margin:0 0 2px 18px;
-}
-#map {
-	border:2px solid #669;
-	width:600px;
-	height:380px;
-	float:left;
-}
-#arrow {
-	display: block;
-	line-height: 380px;
-	font-size: 80px;
-	float: left;
-	text-align: center;
-	width: 50px;
-}
-#data {
-	display:block;
-	float:left;
-	width:220px;
-	height:380px;
-	background:#eee;
-	border:2px solid #669;
-	padding:2px;
-	font-size:.85em;
-	overflow:scroll;
-	margin:0;
-}
-#content,#refs {
-	float:left;
-	margin-right:1em;
-}
-#copy {
-	position:fixed;
-	z-index:1000;
-	right:150px;
-	top:-6px;
-	font-style:italic;
-	font-size:.85em;
-	padding:5px 8px;
-	background: #ccc;
-	border: 2px solid #3e5585;		
-	border-radius:.7em;
-	opacity: 0.8;		
-}
-#copy a {
-	color:#285585
-}
-#ribbon {
-	position: absolute;
-	top: 0;
-	right: 0;
-	border: 0;
-	filter: alpha(opacity=80);
-	-khtml-opacity: .8;
-	-moz-opacity: .8;
-	opacity: .8;		
-}
-#comments {
-	clear:both;
-}
-pre {
-	background-color: #fff;
-	color:#888;
-	line-height: 1.5em;
-	padding:4px;
-	float: left;
-	box-shadow:2px 2px 4px #ccc
-}
-</style>
+	<title>Leaflet Generic JSON Layer</title> 
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" /> 
+	<link rel="stylesheet" href="/maps/leaflet/dist/leaflet.css" />
+	<link rel="stylesheet" href="style.css" />
 </head>
 
 <body>
-<h2><img src="jsonlayer.png" /> Leaflet Generic JSON Layer</a></h2>
+<h2> Leaflet Generic JSON Layer</a></h2>
 <p>
 	Simple way for transform JSON data in Leaflet Layer!<br />
 	<iframe src="http://ghbtns.com/github-btn.html?user=stefanocudini&amp;repo=leaflet-layerJSON&amp;type=watch&amp;count=true" allowtransparency="true" frameborder="0" scrolling="0" width="104px" height="20px"></iframe>
@@ -114,61 +31,49 @@ pre {
 		<li>Add markers to different layer</li>
 	</ul>
 </div>
-<div id="refs">	
+<div id="refs">
+
+	<h4>Examples</h4>
+	<ul>
+		<li><a href="examples/simple.html">Simple Ajax</a></li>
+		<li><a href="examples/jsonp.html">JSONP OSM Nominatim</a></li>
+	</ul>
+	<br />
+
 	<h4>Repositories</h4>
 	<a target="_blank" href="https://github.com/stefanocudini/leaflet-layerJSON">Github.com</a>
 	<br />	
 	<a target="_blank" href="https://bitbucket.org/zakis_/leaflet-layerjson">Bitbucket.org</a>
 	<br />
 
-	<h4>Demo</h4>
-	<a href="http://labs.easyblog.it/maps/leaflet-layerjson">labs.easyblog.it/maps/leaflet-layerjson</a>
-
 	<h4>Download</h4>
 	<ul>
 		<li><a href="https://github.com/stefanocudini/leaflet-layerJSON/archive/master.zip">Dev Pack (.zip)</a></li>
-		<li><a href="layer-json.js">Source Code (.js)</a></li>
-		<li><a href="layer-json.min.js">Compressed (.min.js)</a></li>		
+		<li><a href="dist/leaflet-layerjson.src.js">Source Code (.js)</a></li>
+		<li><a href="dist/leaflet-layerjson.min.js">Compressed (.min.js)</a></li>		
 	</ul>
 </div>
 
 <div style="clear:both">
-<br />
-	<h4>Simple Ajax Demo:</h4>
+	<br />
+	<h4>Usage</h4>
 <pre>
+
 var ajaxUrl = "search.php?lat1={minlat}&lat2={maxlat}&lon1={minlon}&lon2={maxlon}";
+
 map.addLayer( new L.LayerJSON({url: ajaxUrl }) );
+
+//and move map for request new data
 </pre>
 </div>
-<div style="clear:both">
-	<pre id="data"></pre>	
-	<div id="arrow">⟩</div>
-	<div id="map"></div>
+
+<div style="clear:both;font-size:.85em;margin-bottom:1em">
+<br />
+	<b>For questions and bugs</b> I recommend you to <a href="https://github.com/stefanocudini/leaflet-list-markers/issues">create New Issue</a> on Github repository.</strong><br />
+	Or to obtain a fast response consult <a href="https://groups.google.com/forum/?hl=it&fromgroups=#!forum/leaflet-js">Official Leaflet community forum</a>.<br />
+	<br />
+	This is a micro discussion area for methods of implementation.<br />
 </div>
-<script src="/maps/leaflet/dist/leaflet.js"></script>
-<script src="layer-json.js"></script>
-<script>
-	
-	/* DEMO SOURCE CODE */
-
-	var map = new L.Map('map', {zoom: 9, center: new L.latLng([41.575330,13.102411]) });
-
-	map.addLayer(new L.TileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'));	//base layer
-
-	var jsonLayer = new L.LayerJSON({url: "search.php?lat1={minlat}&lat2={maxlat}&lon1={minlon}&lon2={maxlon}"});
-	
-	map.addLayer(jsonLayer);
-	
-	map.addControl(new L.Control.Layers({},{'JSON Data Layer': jsonLayer},{collapsed:false}));
-
-	jsonLayer.on('dataloaded', function(e) {	//show loaded data!
-		if(JSON)
-			L.DomUtil.get('data').innerHTML = JSON.stringify( e.data, null, ' ' );
-		else
-			console.log(e.data);
-	});
-		
-</script>
 
 <div id="copy"><a href="http://labs.easyblog.it/">Labs</a> &bull; <a rel="author" href="http://labs.easyblog.it/stefano-cudini/">Stefano Cudini</a></div>
 <a href="https://github.com/stefanocudini/leaflet-layerJSON"><img id="ribbon" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"></a>

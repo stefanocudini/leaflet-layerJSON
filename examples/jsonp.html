@@ -4,29 +4,38 @@
 <title>Leaflet Generic JSON Layer</title> 
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" /> 
 <link rel="stylesheet" href="/leaflet/leaflet.css" />
-<style>
-#map {
-	width:600px;
-	height:400px;
-}
-</style>
+<link rel="stylesheet" href="../style.css" />
 </head>
 
 <body>
-<h3><a href="../">Leaflet Generic JSON Layer</a></h3>
+<h3><a href="../"><big>◄</big> Leaflet Generic JSON Layer</a></h3>
 
-<h4>Simple Example: <em>retrieve json by JSONP request and transform data in markers</em></h4>
+<h4>JSONP Example: <em>get data by JSONP request and transform data in markers</em></h4>
+<div>
+	Data offer by 
+	<small><a href="http://wiki.openstreetmap.org/wiki/Nominatim">nominatim.osm.org</a></small>
+</div>
 <div id="map"></div>
 
 <script src="/leaflet/leaflet.js"></script>
-<script src="layer-json.js"></script>
+<script src="../src/leaflet-layerjson.js"></script>
 <script>
 
 	var map = new L.Map('map', {zoom: 9, center: new L.latLng([41.575330,13.102411]) });
 
 	map.addLayer(new L.TileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'));	//base layer
 
-	var jsonLayer = new L.LayerJSON({url: "search.php?lat1={minlat}&lat2={maxlat}&lon1={minlon}&lon2={maxlon}", jsonpParam: 'call_jsonp'});
+	var url = "http://open.mapquestapi.com/nominatim/v1/search.php"+
+		"?q=r&format=json&addressdetails=0&bounded=1&limit=30"+
+		"&viewbox={minlon}%2C{minlat}%2C{maxlon}%2C{maxlat}";	//use url encoded
+
+	var jsonLayer = new L.LayerJSON({
+						url: url,
+						jsonpParam: 'json_callback',
+						propertyLoc: ['lat','lon'],
+						propertyTitle: 'display_name'
+					});
+
 	map.addLayer(jsonLayer);
 	
 	map.addControl(new L.Control.Layers({},{'json data': jsonLayer},{ collapsed:false}));

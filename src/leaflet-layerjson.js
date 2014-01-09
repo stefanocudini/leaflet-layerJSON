@@ -24,7 +24,7 @@ L.LayerJSON = L.FeatureGroup.extend({
 		jsonpParam: null,			//callback parameter name for jsonp request append to url
 		callData: null,				//alternative function that return data (if use $.ajax() set async=false)
 		propertyLoc: 'loc', 		//json property used as Latlng of marker
-		//TODO supporting lat,lng fields like L.Control.Search
+		//using array: ['latname','lonname'] for select double fields(ex. ['lat','lon'] )
 		propertyTitle: 'title', 	//json property used as title(popup, marker, icon)
 		filter: null,				//function that filter marker by its data, run before onEachMarker
 		dataToMarker: null,			//function that will be used for creating markers from json points, similar to pointToLayer of L.GeoJSON
@@ -37,6 +37,8 @@ L.LayerJSON = L.FeatureGroup.extend({
 		updateOutBounds: true,		//request new data only if current bounds higher than last bounds
 		precision: 6,				//number of digit send to server for lat,lng precision
 		attribution: ''				//attribution text
+		//TODO option: enabled, if false 
+		//TODO methods: enable()/disable()
 	},
     
 	initialize: function(options) {			
@@ -125,7 +127,7 @@ L.LayerJSON = L.FeatureGroup.extend({
 
 		var title = data[ this.options.propertyTitle ],
 			//TODO check propertyLoc and propertyTitle in addMarker
-			markerOpts = L.Util.extend({icon: this._buildIcon(data,title) }, data),
+			markerOpts = L.Util.extend({icon: this._buildIcon(data,title), title: title }, data),
 			marker = new L.Marker(latlng, markerOpts );
 		
 		if(this.options.buildPopup)
@@ -137,8 +139,14 @@ L.LayerJSON = L.FeatureGroup.extend({
 	addMarker: function(data) {
 		//TODO empty this._markers sooner or later
 
-		var latlng = data[this.options.propertyLoc],
-			hash = latlng.join() + data[this.options.propertyTitle];
+		var latlng, hash, propLoc = this.options.propertyLoc;
+
+		if( L.Util.isArray(propLoc) )
+			latlng = L.latLng( parseFloat(data[propLoc[0]]), parseFloat(data[propLoc[1]]) );
+		else
+			latlng = L.latLng( data[propLoc] );
+
+		hash = [latlng.lat,latlng.lng].join() + data[this.options.propertyTitle];
 
 		if(!this._markers[hash])
 			this._markers[hash] = this._dataToMarker(data, latlng);
@@ -196,7 +204,7 @@ L.LayerJSON = L.FeatureGroup.extend({
 			this._dataRequest.abort();	//prevent parallel requests
 
 		var that = this;
-		that.fire('dataloading', {url: url});	
+		that.fire('dataloading', {url: url });	
 		this._dataRequest = this._callData(url, function(json) {//using always that inside function
 
 			that._dataRequest = null;
