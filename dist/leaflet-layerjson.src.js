@@ -31,7 +31,7 @@ L.LayerJSON = L.FeatureGroup.extend({
 		jsonpParam: null,			//callback parameter name for jsonp request append to url
 		callData: null,				//alternative function that return data (if use $.ajax() set async=false)
 		propertyLoc: 'loc', 		//json property used as Latlng of marker
-		//using array: ['latname','lonname'] for select double fields(ex. ['lat','lon'] )
+		//if propertyLoc is array like: ['latname','lonname'] for select double fields(ex. ['lat','lon'] )
 		propertyTitle: 'title', 	//json property used as title(popup, marker, icon)
 		filter: null,				//function that filter marker by its data, run before onEachMarker
 		dataToMarker: null,			//function that will be used for creating markers from json points, similar to pointToLayer of L.GeoJSON

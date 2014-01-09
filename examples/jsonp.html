@@ -10,12 +10,15 @@
 <body>
 <h3><a href="../"><big>◄</big> Leaflet Generic JSON Layer</a></h3>
 
-<h4>JSONP Example: <em>get data by JSONP request and transform data in markers</em></h4>
+<h4>JSONP Example: <em>get data from 3rd party JSONP service and transform in markers</em></h4>
 <div>
 	Data offer by 
 	<small><a href="http://wiki.openstreetmap.org/wiki/Nominatim">nominatim.osm.org</a></small>
 </div>
-<div id="map"></div>
+<div style="width:600px">
+	<div id="loader" style="visibility:hidden;text-align:center"><b>Loading 3rd party json...</b></div>
+	<div id="map"></div>
+</div>
 
 <script src="/maps/leaflet/dist/leaflet.js"></script>
 <script src="../src/leaflet-layerjson.js"></script>
@@ -35,6 +38,13 @@
 						propertyLoc: ['lat','lon'],
 						propertyTitle: 'display_name'
 					});
+	jsonLayer
+		.on('dataloading', function(e){
+			L.DomUtil.get('loader').style.visibility = 'visible';
+		})
+		.on('dataloaded', function(e){
+			L.DomUtil.get('loader').style.visibility = 'hidden';
+		});
 
 	map.addLayer(jsonLayer);
 	

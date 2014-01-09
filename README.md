@@ -4,11 +4,11 @@ Leaflet Generic JSON Layer
 What
 ------
 
+Simple way for transform any JSON data source in a Leaflet Layer!
+
 A generic Leaflet Layer that load JSON data in layer in the form of markers with attributes
 
-Simple way for transform remote JSON data in Leaflet Layer!
-
-and minimize data requests when browse map
+and minimize remote requests with caching system
 
 Tested in Leaflet 0.6
 
