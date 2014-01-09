@@ -1,13 +1,4 @@
-/*
- * Leaflet Generic JSON Layer 1.0.0
- * http://labs.easyblog.it/maps/leaflet-layerjson
- *
- * https://github.com/stefanocudini/leaflet-layerJSON
- * https://bitbucket.org/zakis_/leaflet-layerJSON
- *
- * Copyright 2013, Stefano Cudini - stefano.cudini@gmail.com
- * Licensed under the MIT license.
- */
+
 (function() {
 
 L.LayerJSON = L.FeatureGroup.extend({
