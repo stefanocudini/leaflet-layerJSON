@@ -1,5 +1,5 @@
 /* 
- * Leaflet Generic JSON Layer v0.1.0 - 2014-01-09 
+ * Leaflet Generic JSON Layer v0.1.2 - 2014-01-22 
  * 
  * Copyright 2014 Stefano Cudini 
  * stefano.cudini@gmail.com 
@@ -11,7 +11,7 @@
  * http://labs.easyblog.it/maps/leaflet-layerjson/ 
  * 
  * Source: 
- * git@github.com:stefanocudini/leaflet-layerJSON.git 
+ * git@github.com:stefanocudini/leaflet-layerjson.git 
  * 
  */
 
