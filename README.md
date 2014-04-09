@@ -1,4 +1,5 @@
-Leaflet Generic JSON Layer
+
+Leaflet Dynamic JSON Layer
 ============
 
 What
@@ -6,7 +7,7 @@ What
 
 Simple way for transform any JSON data source in a Leaflet Layer!
 
-A generic Leaflet Layer that load JSON data in layer in the form of markers with attributes
+A Dynamic Leaflet Layer that load JSON data in layer in the form of markers with attributes
 
 and minimize remote requests with caching system
 

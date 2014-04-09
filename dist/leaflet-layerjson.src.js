@@ -1,5 +1,5 @@
 /* 
- * Leaflet Generic JSON Layer v0.1.2 - 2014-01-22 
+ * Leaflet Dynamic JSON Layer v0.1.2 - 2014-01-22 
  * 
  * Copyright 2014 Stefano Cudini 
  * stefano.cudini@gmail.com 

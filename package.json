@@ -1,7 +1,7 @@
 {
   "name": "leaflet-layerjson",
   "version": "0.1.2",
-  "description": "A generic Leaflet Layer that load/filter dinamically JSON data from Ajax/Jsonp, with caching",
+  "description": "A Dynamic Leaflet Layer that load/filter dinamically JSON data from Ajax/Jsonp, with caching",
   "repository": {
     "type": "git",
     "url": "git@github.com:stefanocudini/leaflet-layerjson.git"

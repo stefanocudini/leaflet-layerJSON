@@ -1,0 +1,68 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"> 
+<html xmlns="http://www.w3.org/1999/xhtml"> 
+<head> 
+<title>Leaflet Dynamic JSON Layer</title> 
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" /> 
+<link rel="stylesheet" href="/maps/leaflet/dist/leaflet.css" />
+<link rel="stylesheet" href="../style.css" />
+</head>
+
+<body>
+<h3><a href="../"><big>◄</big> Leaflet Dynamic JSON Layer</a></h3>
+
+<h4>Example: <em>Show Bars in Rome</em></h4>
+<div id="post-it">
+	Using: <b><a href="http://wiki.openstreetmap.org/wiki/Overpass_API">Overpass API</a></b>
+	<br /><br />
+	Service offer by <br />
+	<b><a href="http://overpass-api.de/">overpass-api.de</a></b>
+	<br /><br />
+	Data offer by <a href="http://osm.org">OpenStreetMap.org</a>
+</div>
+<div style="width:600px">
+	<div id="map"></div>
+</div>
+
+<div id="copy"><a href="http://labs.easyblog.it/">Labs</a> &bull; <a rel="author" href="http://labs.easyblog.it/stefano-cudini/">Stefano Cudini</a></div>
+<a href="https://github.com/stefanocudini/leaflet-layerJSON"><img id="ribbon" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"></a>
+
+<script src="/maps/leaflet/dist/leaflet.js"></script>
+<script src="../src/leaflet-layerjson.js"></script>
+<script>
+
+	var map = new L.Map('map', {zoom: 15, minZoom:14, center: new L.latLng([41.898699, 12.472915]) });
+
+	map.addLayer(new L.TileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'));
+
+	function filterJSON(json)
+	{
+		var rjson = [], item;
+
+		for(var i in json.elements)
+		{
+			item = json.elements[i];
+			rjson.push({
+				title: item.tags.name || null,
+				loc: [item.lat, item.lon],
+				tags: item.tags
+			});
+		}
+		return rjson;
+	}
+
+	function htmlJSON(data, marker) {
+		return data.title ? '<h4>'+data.title+'</h4>' : null;
+	}
+
+	map.addLayer(new L.LayerJSON({
+						url: 'http://overpass-api.de/api/interpreter?data=[out:json];node({minlat},{minlon},{maxlat},{maxlon})[amenity=bar];out;',
+						minShift: 800,
+						updateOutBounds: true,
+						filterData: filterJSON,
+						buildPopup: htmlJSON
+					}));
+</script>
+
+<script type="text/javascript" src="/labs.analytics.js"></script>
+</body>
+</html>

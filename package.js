@@ -1,5 +1,5 @@
 Package.describe({
-	summary: "Leaflet Generic JSON Layer"
+	summary: "Leaflet Dynamic JSON Layer"
 });
 
 Package.on_use(function (api, where) {

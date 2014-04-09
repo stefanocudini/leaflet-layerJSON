@@ -1,6 +1,6 @@
 {
 	"name": "leaflet-layerjson",
-	"description": "A generic Leaflet Layer that load/filter dinamically JSON data from Ajax/Jsonp, with caching",
+	"description": "A Dynamic Leaflet Layer that load/filter dinamically JSON data from Ajax/Jsonp, with caching",
 	"homepage": "http://labs.easyblog.it/maps/leaflet-layerjson/",
 	"author": "Stefano Cudini <stefano.cudini@gmail.com>",
 	"version": "0.1.2",

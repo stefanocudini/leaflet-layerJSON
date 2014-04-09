@@ -4,7 +4,7 @@ body {
 	margin:20px;
 }
 
-h2,h3,h4,h5 {margin:6px 0 0 0}
+h2,h3,h4,h5 {margin:6px 0}
 a {text-decoration: none;}
 p {margin:0 0 20px 0}
 ul {
@@ -20,6 +20,20 @@ li {
 	width:600px;
 	height:380px;
 	float:left;
+}
+#post-it {
+	position: absolute;
+	left:620px;
+	top: 100px; 
+	width:9em;
+	height:9em;
+	margin-left:2em;
+	padding:1em;
+	float:left;
+	background:#fbf5bf;
+	border:1px solid #c6bb58;
+	box-shadow: 2px 2px 6px #999;
+	color:#666;
 }
 #arrow {
 	display: block;

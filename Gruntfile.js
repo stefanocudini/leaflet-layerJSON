@@ -13,7 +13,7 @@ grunt.initConfig({
 	meta: {
 		banner:
 		'/* \n'+
-		' * Leaflet Generic JSON Layer v<%= pkg.version %> - <%= grunt.template.today("yyyy-mm-dd") %> \n'+
+		' * Leaflet Dynamic JSON Layer v<%= pkg.version %> - <%= grunt.template.today("yyyy-mm-dd") %> \n'+
 		' * \n'+
 		' * Copyright <%= grunt.template.today("yyyy") %> <%= pkg.author.name %> \n'+
 		' * <%= pkg.author.email %> \n'+

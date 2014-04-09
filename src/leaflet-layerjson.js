@@ -17,7 +17,7 @@ L.LayerJSON = L.FeatureGroup.extend({
 		propertyLoc: 'loc', 		//json property used as Latlng of marker
 		//if propertyLoc is array like: ['latname','lonname'] for select double fields(ex. ['lat','lon'] )
 		propertyTitle: 'title', 	//json property used as title(popup, marker, icon)
-		filter: null,				//function that filter marker by its data, run before onEachMarker
+		filterData: null,				//function that filter marker by its data, run before onEachMarker
 		dataToMarker: null,			//function that will be used for creating markers from json points, similar to pointToLayer of L.GeoJSON
 		onEachMarker: null,			//function called on each marker created, similar to option onEachFeature of L.GeoJSON
 		layerTarget: null,			//pre-existing layer to add markers, is a LayerGroup or L.MarkerClusterGroup http://goo.gl/tvmu0
@@ -37,7 +37,7 @@ L.LayerJSON = L.FeatureGroup.extend({
 		L.Util.setOptions(this, options);
 		this._dataToMarker = this.options.dataToMarker || this._defaultDataToMarker;
 		this._buildIcon = this.options.buildIcon || this._defaultBuildIcon;
-		this._filterMarker = this.options.filter || function(){ return true; };
+		this._filterData = this.options.filterData || null;
 		this._dataRequest = null;
 		this._dataUrl = this.options.url;
 		this._center = null;
@@ -119,10 +119,11 @@ L.LayerJSON = L.FeatureGroup.extend({
 		var title = data[ this.options.propertyTitle ],
 			//TODO check propertyLoc and propertyTitle in addMarker
 			markerOpts = L.Util.extend({icon: this._buildIcon(data,title), title: title }, data),
-			marker = new L.Marker(latlng, markerOpts );
+			marker = new L.Marker(latlng, markerOpts ),
+			htmlPopup = null;
 		
-		if(this.options.buildPopup)
-			marker.bindPopup(this.options.buildPopup(data, marker), this.options.optsPopup );
+		if(this.options.buildPopup && (htmlPopup = this.options.buildPopup(data, marker)))
+			marker.bindPopup(htmlPopup, this.options.optsPopup );
 		
 		return marker;
 	},
@@ -160,6 +161,8 @@ L.LayerJSON = L.FeatureGroup.extend({
 
 		var newCenter = this._map.getCenter(),
 			newBounds = this._map.getBounds();
+
+			console.log(newCenter);
 
 		if( this.options.minShift && this._center.distanceTo(newCenter) < this.options.minShift )
 			return false;
@@ -200,12 +203,14 @@ L.LayerJSON = L.FeatureGroup.extend({
 
 			that._dataRequest = null;
 
+			if(that._filterData)
+				json = that._filterData(json);
+
 			that.fire('dataloaded', {data: json});
 			
 			//that.clearLayers();
 			for(var k in json)
-				if(that._filterMarker(json[k]))
-					that.addMarker.call(that, json[k]);
+				that.addMarker.call(that, json[k]);
 		});
 	},
 

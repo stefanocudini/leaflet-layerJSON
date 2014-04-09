@@ -1,24 +1,27 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"> 
 <html xmlns="http://www.w3.org/1999/xhtml"> 
 <head> 
-<title>Leaflet Generic JSON Layer</title> 
+<title>Leaflet Dynamic JSON Layer</title> 
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" /> 
 <link rel="stylesheet" href="/maps/leaflet/dist/leaflet.css" />
 <link rel="stylesheet" href="../style.css" />
 </head>
 
 <body>
-<h3><a href="../"><big>◄</big> Leaflet Generic JSON Layer</a></h3>
+<h3><a href="../"><big>◄</big> Leaflet Dynamic JSON Layer</a></h3>
 
 <h4>JSONP Example: <em>get data from 3rd party JSONP service and transform in markers</em></h4>
-<div>
+<div id="post-it">
 	Data offer by 
-	<small><a href="http://wiki.openstreetmap.org/wiki/Nominatim">nominatim.osm.org</a></small>
+	<b><a href="http://wiki.openstreetmap.org/wiki/Nominatim">nominatim.osm.org</a></b>
 </div>
 <div style="width:600px">
 	<div id="loader" style="visibility:hidden;text-align:center"><b>Loading 3rd party json...</b></div>
 	<div id="map"></div>
 </div>
+
+<div id="copy"><a href="http://labs.easyblog.it/">Labs</a> &bull; <a rel="author" href="http://labs.easyblog.it/stefano-cudini/">Stefano Cudini</a></div>
+<a href="https://github.com/stefanocudini/leaflet-layerJSON"><img id="ribbon" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"></a>
 
 <script src="/maps/leaflet/dist/leaflet.js"></script>
 <script src="../src/leaflet-layerjson.js"></script>
@@ -50,8 +53,6 @@
 	
 	map.addControl(new L.Control.Layers({},{'json data': jsonLayer},{ collapsed:false}));
 </script>
-
-<div id="copy">powered by <a href="mailto:stefano.cudini@gmail.com">Stefano Cudini</a></div>
 
 <script type="text/javascript" src="/labs.analytics.js"></script>
 </body>
