@@ -18,19 +18,28 @@ var l = new L.LayerJSON({url: "search.php?lat1={minlat}&lat2={maxlat}&lon1={minl
 map.addLayer(l);
 ```
 
-**Options:**
+Options
+------
+
+Data Source:
 * **url** remote url,
 * **jsonpParam** callback parameter name for jsonp request append to url
 * **callData** alternative function that return data (if use *$.ajax()* set async=false)
+
+Filtering:
 * **propertyLoc** json property used as Latlng of marker, if is array: *['lat','lon']* select double fields
 * **propertyTitle** json property used as title in marker
 * **filterData** function for pre-filter data
+
+Rendering:
 * **dataToMarker** function that will be used for creating markers from json points
 * **onEachMarker** function called on each marker created, similar to option onEachFeature of L.GeoJSON
 * **layerTarget** pre-existing layer to add markers(*L.LayerGroup*, *L.MarkerClusterGroup*)
 * **buildPopup** function popup builder
 * **optsPopup** popup options
 * **buildIcon** function icon builder
+
+Caching:
 * **minShift** min shift for update data(in meters)
 * **updateOutBounds** request new data only if current bounds higher than last bounds
 * **precision** number of digit send to server for lat,lng precision
