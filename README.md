@@ -47,6 +47,6 @@ How to use
 Adding the layer to the map:
 
 ```
-map.addLayer( new L.LayerJSON({ url: 'search.php?format=json&lat1={minlat}&lat2={maxlat}&lon1={minlon}&lon2={maxlon} }) );
-
+var l = new L.LayerJSON({url: "search.php?format=json&lat1={minlat}&lat2={maxlat}&lon1={minlon}&lon2={maxlon}" });
+map.addLayer(l);
 ```
