@@ -40,18 +40,24 @@ L.LayerJSON = L.FeatureGroup.extend({
 		this._dataToMarker = this.options.dataToMarker || this._defaultDataToMarker;
 		this._buildIcon = this.options.buildIcon || this._defaultBuildIcon;
 		this._filterData = this.options.filterData || null;
-		this._dataRequest = null;
 		this._dataUrl = this.options.url;
-		this._center = null;
-		this._maxBounds = null;
-		this._markers = {};	//used for caching _dataToMarker builds
-		if(this.options.jsonpParam)
+		
+		if(this._dataUrl)
 		{
-			this._dataUrl += '&'+this.options.jsonpParam+'=';
-			this._callData = this.getJsonp;
+			this._callData = this.getAjax;
+			if(this.options.jsonpParam)
+			{
+				this._dataUrl += '&'+this.options.jsonpParam+'=';
+				this._callData = this.getJsonp;
+			}
 		}
 		else
-			this._callData = this.options.callData || this.getAjax;
+			this._callData = this.options.callData;
+
+		this._dataRequest = null;
+		this._center = null;
+		this._maxBounds = null;
+		this._markers = {};	//used for caching _dataToMarker builds		
 	},
 
 	onAdd: function(map) { //console.info('onAdd');
