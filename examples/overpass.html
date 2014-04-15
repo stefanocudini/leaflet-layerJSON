@@ -19,11 +19,12 @@
 	<br /><br />
 	Data offer by <a href="http://osm.org">OpenStreetMap.org</a>
 </div>
-<div style="width:600px;float:left">
+<div style="position:relative;float:left">
 	<div id="map"></div>
+	<div id="loader"></div>
 </div>
 <pre style="float:left">
-map.addLayer(new L.LayerJSON({
+L.layerJSON({
 	url: 'http://overpass-api.de/api/interpreter?data=[out:json];node({lat1},{lon1},{lat2},{lon2})[amenity=bar];out;',
 	propertyItems: 'elements',
 	propertyTitle: 'tags.name',
@@ -31,7 +32,7 @@ map.addLayer(new L.LayerJSON({
 	buildPopup: function(data, marker) {
 		return data.tags.name || null;
 	}
-}));
+}).addTo(map);
 </pre>
 
 
@@ -42,19 +43,31 @@ map.addLayer(new L.LayerJSON({
 <script src="../src/leaflet-layerjson.js"></script>
 <script>
 
-	var map = new L.Map('map', {zoom: 15, minZoom:14, center: new L.latLng([41.898699, 12.472915]) });
+	var map = L.map('map', {
+			zoom: 15,
+			minZoom:14,
+			center: new L.latLng([41.898699, 12.472915]),
+			layers: L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png')
+		}),
+		loader = L.DomUtil.get('loader');
 
-	map.addLayer(new L.TileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'));
+	L.layerJSON({
+		url: 'http://overpass-api.de/api/interpreter?data=[out:json];node({lat1},{lon1},{lat2},{lon2})[amenity=bar];out;',
+		propertyItems: 'elements',
+		propertyTitle: 'tags.name',
+		propertyLoc: ['lat','lon'],
+		buildPopup: function(data, marker) {
+			return data.tags.name || null;
+		}
+	})
+	.on('dataloading',function(e) {
+		loader.style.display = 'block';
+	})
+	.on('dataloaded',function(e) {
+		loader.style.display = 'none';
+	})
+	.addTo(map);
 
-	map.addLayer(new L.LayerJSON({
-					url: 'http://overpass-api.de/api/interpreter?data=[out:json];node({lat1},{lon1},{lat2},{lon2})[amenity=bar];out;',
-					propertyItems: 'elements',
-					propertyTitle: 'tags.name',
-					propertyLoc: ['lat','lon'],
-					buildPopup: function(data, marker) {
-						return data.tags.name || null;
-					}
-				}));
 </script>
 
 <script type="text/javascript" src="/labs.analytics.js"></script>

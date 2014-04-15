@@ -68,12 +68,7 @@
 	<br />
 	<h4>Usage</h4>
 <pre>
-
-var ajaxUrl = "search.php?lat1={minlat}&lat2={maxlat}&lon1={minlon}&lon2={maxlon}";
-
-map.addLayer( new L.LayerJSON({url: ajaxUrl }) );
-
-//and move map for request new data
+L.layerJSON({url: "search.php?lat1={lat1}&lat2={lat2}&lon1={lon1}&lon2={lon2}" }).addTo(map);
 </pre>
 </div>
 

@@ -18,7 +18,7 @@ li {
 #map {
 	border:2px solid #669;
 	width:600px;
-	height:360px;
+	height:340px;
 	float:left;
 }
 #post-it {
@@ -92,9 +92,19 @@ pre {
 	background-color: #fff;
 	color:#333;
 	line-height: 1.5em;
-	padding:6px;
+	padding:10px;
 	float: left;
 	font-size: 12px;
 	border: 1px solid #aaa;
 	box-shadow:inset 2px 2px 4px #ccc
 }
+#loader {
+	display: none;
+	position: absolute;
+	top:0;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	background: url('examples/loader.gif') center center no-repeat rgba(255,255,255,0.5);
+}
+

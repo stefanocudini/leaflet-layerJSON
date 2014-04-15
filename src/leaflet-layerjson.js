@@ -289,5 +289,9 @@ L.LayerJSON = L.FeatureGroup.extend({
 	}
 });
 
+L.layerJSON = function (options) {
+    return new L.LayerJSON(options);
+};
+
 }).call(this);
 
