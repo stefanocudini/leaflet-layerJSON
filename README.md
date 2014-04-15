@@ -14,7 +14,7 @@ How to use
 ------
 
 ```
-var l = new L.LayerJSON({url: "search.php?lat1={minlat}&lat2={maxlat}&lon1={minlon}&lon2={maxlon}" });
+var l = new L.LayerJSON({url: "search.php?lat1={lat1}&lat2={lat2}&lon1={lon1}&lon2={lon2}" });
 map.addLayer(l);
 ```
 
@@ -27,6 +27,7 @@ Data Source:
 * **callData** alternative function that return data (if use *$.ajax()* set async=false)
 
 Filtering:
+* **propertyItems** json property used contains data items
 * **propertyLoc** json property used as Latlng of marker, if is array: *['lat','lon']* select double fields
 * **propertyTitle** json property used as title in marker
 * **filterData** function for pre-filter data
