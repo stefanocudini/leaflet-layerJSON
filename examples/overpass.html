@@ -19,9 +19,21 @@
 	<br /><br />
 	Data offer by <a href="http://osm.org">OpenStreetMap.org</a>
 </div>
-<div style="width:600px">
+<div style="width:600px;float:left">
 	<div id="map"></div>
 </div>
+<pre style="float:left">
+map.addLayer(new L.LayerJSON({
+	url: 'http://overpass-api.de/api/interpreter?data=[out:json];node({lat1},{lon1},{lat2},{lon2})[amenity=bar];out;',
+	propertyItems: 'elements',
+	propertyTitle: 'tags.name',
+	propertyLoc: ['lat','lon'],
+	buildPopup: function(data, marker) {
+		return data.tags.name || null;
+	}
+}));
+</pre>
+
 
 <div id="copy"><a href="http://labs.easyblog.it/">Labs</a> &bull; <a rel="author" href="http://labs.easyblog.it/stefano-cudini/">Stefano Cudini</a></div>
 <a href="https://github.com/stefanocudini/leaflet-layerJSON"><img id="ribbon" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"></a>
@@ -35,14 +47,14 @@
 	map.addLayer(new L.TileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'));
 
 	map.addLayer(new L.LayerJSON({
-						url: 'http://overpass-api.de/api/interpreter?data=[out:json];node({lat1},{lon1},{lat2},{lon2})[amenity=bar];out;',
-						propertyItems: 'elements',
-						propertyTitle: 'tags.name',
-						propertyLoc: ['lat','lon'],
-						buildPopup: function(data, marker) {
-							return data.title ? '<h4>'+data.title+'</h4>' : null;
-						}
-					}));
+					url: 'http://overpass-api.de/api/interpreter?data=[out:json];node({lat1},{lon1},{lat2},{lon2})[amenity=bar];out;',
+					propertyItems: 'elements',
+					propertyTitle: 'tags.name',
+					propertyLoc: ['lat','lon'],
+					buildPopup: function(data, marker) {
+						return data.tags.name || null;
+					}
+				}));
 </script>
 
 <script type="text/javascript" src="/labs.analytics.js"></script>

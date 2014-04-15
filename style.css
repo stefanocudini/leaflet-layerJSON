@@ -18,15 +18,15 @@ li {
 #map {
 	border:2px solid #669;
 	width:600px;
-	height:380px;
+	height:360px;
 	float:left;
 }
 #post-it {
 	position: absolute;
 	left:620px;
-	top: 100px; 
+	top: 80px; 
 	width:9em;
-	height:9em;
+	height:8em;
 	margin-left:2em;
 	padding:1em;
 	float:left;
@@ -90,9 +90,11 @@ li {
 }
 pre {
 	background-color: #fff;
-	color:#888;
+	color:#333;
 	line-height: 1.5em;
-	padding:4px;
+	padding:6px;
 	float: left;
-	box-shadow:2px 2px 4px #ccc
+	font-size: 12px;
+	border: 1px solid #aaa;
+	box-shadow:inset 2px 2px 4px #ccc
 }
