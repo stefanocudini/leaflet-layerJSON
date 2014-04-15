@@ -1,5 +1,5 @@
 /* 
- * Leaflet Dynamic JSON Layer v0.1.4 - 2014-04-15 
+ * Leaflet Dynamic JSON Layer v0.1.4 - 2014-04-16 
  * 
  * Copyright 2014 Stefano Cudini 
  * stefano.cudini@gmail.com 
@@ -30,6 +30,7 @@ L.LayerJSON = L.FeatureGroup.extend({
 		url: 'search.php?lat1={lat1}&lat2={lat2}&lon1={lon1}&lon2={lon2}',
 		jsonpParam: null,			//parameter name for jsonp requests
 		callData: null,				//custom function for data source
+		
 		propertyItems: '', 			//json property used contains data items
 		propertyTitle: 'title', 	//json property used as title(popup, marker, icon)
 		propertyLoc: 'loc', 		//json property used as Latlng of marker use array for select double fields(ex. ['lat','lon'] )

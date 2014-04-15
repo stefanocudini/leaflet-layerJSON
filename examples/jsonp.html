@@ -6,30 +6,25 @@
 <link rel="stylesheet" href="/maps/leaflet/dist/leaflet.css" />
 <link rel="stylesheet" href="../style.css" />
 </head>
-
 <body>
 <h3><a href="../"><big>◄</big> Leaflet Dynamic JSON Layer</a></h3>
-
 <h4>JSONP Example: <em>get data from 3rd party JSONP service and transform in markers</em></h4>
 <div id="post-it">
 	Data offer by 
 	<b><a href="http://wiki.openstreetmap.org/wiki/Nominatim">nominatim.osm.org</a></b>
 </div>
 <div style="width:600px">
-	<div id="loader" style="visibility:hidden;text-align:center"><b>Loading 3rd party json...</b></div>
 	<div id="map"></div>
 </div>
-
-<div id="copy"><a href="http://labs.easyblog.it/">Labs</a> &bull; <a rel="author" href="http://labs.easyblog.it/stefano-cudini/">Stefano Cudini</a></div>
-<a href="https://github.com/stefanocudini/leaflet-layerJSON"><img id="ribbon" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"></a>
-
 <script src="/maps/leaflet/dist/leaflet.js"></script>
 <script src="../src/leaflet-layerjson.js"></script>
 <script>
 
-	var map = new L.Map('map', {zoom: 9, center: new L.latLng([41.575330,13.102411]) });
-
-	map.addLayer(new L.TileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'));	//base layer
+	var map = new L.Map('map', {
+			zoom: 9,
+			center: new L.latLng([41.575330,13.102411]),
+			layers: L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png')
+		});
 
 	var url = "http://open.mapquestapi.com/nominatim/v1/search.php"+
 		"?q=r&format=json&addressdetails=0&bounded=1&limit=30"+
@@ -41,19 +36,13 @@
 						propertyLoc: ['lat','lon'],
 						propertyTitle: 'display_name'
 					});
-	jsonLayer
-		.on('dataloading', function(e){
-			L.DomUtil.get('loader').style.visibility = 'visible';
-		})
-		.on('dataloaded', function(e){
-			L.DomUtil.get('loader').style.visibility = 'hidden';
-		});
 
 	map.addLayer(jsonLayer);
 	
 	map.addControl(new L.Control.Layers({},{'json data': jsonLayer},{ collapsed:false}));
 </script>
-
+<div id="copy"><a href="http://labs.easyblog.it/">Labs</a> &bull; <a rel="author" href="http://labs.easyblog.it/stefano-cudini/">Stefano Cudini</a></div>
+<a href="https://github.com/stefanocudini/leaflet-layerJSON"><img id="ribbon" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"></a>
 <script type="text/javascript" src="/labs.analytics.js"></script>
 </body>
 </html>
