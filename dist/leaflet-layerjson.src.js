@@ -167,7 +167,7 @@ L.LayerJSON = L.FeatureGroup.extend({
 		if( L.Util.isArray(propLoc) )
 			latlng = L.latLng( parseFloat(data[propLoc[0]]), parseFloat(data[propLoc[1]]) );
 		else
-			latlng = L.latLng( data[propLoc] );
+			latlng = L.latLng( this._getPath(data, propLoc) );
 
 		hash = [latlng.lat,latlng.lng].join() + this._getPath(data, this.options.propertyTitle);
 
