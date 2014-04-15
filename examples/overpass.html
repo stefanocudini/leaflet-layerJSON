@@ -34,23 +34,14 @@
 
 	map.addLayer(new L.TileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'));
 
-	function filterJSON(json)
-	{
-		return json.elements;
-	}
-
-	function htmlJSON(data, marker) {
-		return data.title ? '<h4>'+data.title+'</h4>' : null;
-	}
-
 	map.addLayer(new L.LayerJSON({
-						url: 'http://overpass-api.de/api/interpreter?data=[out:json];node({minlat},{minlon},{maxlat},{maxlon})[amenity=bar];out;',
-						minShift: 800,
-						updateOutBounds: true,
-						filterData: filterJSON,
+						url: 'http://overpass-api.de/api/interpreter?data=[out:json];node({lat1},{lon1},{lat2},{lon2})[amenity=bar];out;',
+						propertyItems: 'elements',
 						propertyTitle: 'tags.name',
 						propertyLoc: ['lat','lon'],
-						buildPopup: htmlJSON
+						buildPopup: function(data, marker) {
+							return data.title ? '<h4>'+data.title+'</h4>' : null;
+						}
 					}));
 </script>
 

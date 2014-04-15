@@ -27,10 +27,10 @@ L.LayerJSON = L.FeatureGroup.extend({
 	//	dataloaded		{data}			fired on ajax/jsonp request success
 	//
 	options: {
-		url: 'search.php?lat1={minlat}&lat2={maxlat}&lon1={minlon}&lon2={maxlon}',
-		jsonpParam: null,			//callback parameter name for jsonp request append to url
-		callData: null,				//alternative function that return data (if use $.ajax() set async=false)
-		//TODO propertyItems: '', 			//json property used contains data items
+		url: 'search.php?lat1={lat1}&lat2={lat2}&lon1={lon1}&lon2={lon2}',
+		jsonpParam: null,			//parameter name for jsonp requests
+		callData: null,				//custom function for data source
+		propertyItems: '', 			//json property used contains data items
 		propertyTitle: 'title', 	//json property used as title(popup, marker, icon)
 		propertyLoc: 'loc', 		//json property used as Latlng of marker use array for select double fields(ex. ['lat','lon'] )
 									// support dotted format: 'prop.subprop.title'
@@ -41,7 +41,7 @@ L.LayerJSON = L.FeatureGroup.extend({
 		buildPopup: null,			//function popup builder
 		optsPopup: null,			//popup options
 		buildIcon: null,			//function icon builder
-		minShift: 8000,				//min shift for update data(in meters)
+		minShift: 1000,				//min shift for update data(in meters)
 		updateOutBounds: true,		//request new data only if current bounds higher than last bounds
 		precision: 6,				//number of digit send to server for lat,lng precision
 		attribution: ''				//attribution text
@@ -221,8 +221,8 @@ L.LayerJSON = L.FeatureGroup.extend({
 			//TODO send map bounds decremented
 			p = this.options.precision,
 			url = L.Util.template(this._dataUrl, {
-					minlat: sw.lat.toFixed(p), maxlat: ne.lat.toFixed(p), 
-					minlon: sw.lng.toFixed(p), maxlon: ne.lng.toFixed(p)
+					lat1: sw.lat.toFixed(p), lat2: ne.lat.toFixed(p), 
+					lon1: sw.lng.toFixed(p), lon2: ne.lng.toFixed(p)
 				});
 
 		if(this._dataRequest)
@@ -236,6 +236,9 @@ L.LayerJSON = L.FeatureGroup.extend({
 
 			if(that._filterData)
 				json = that._filterData(json);
+			
+			if(that.options.propertyItems)
+				json = that._getPath(json, that.options.propertyItems);
 
 			that.fire('dataloaded', {data: json});
 			

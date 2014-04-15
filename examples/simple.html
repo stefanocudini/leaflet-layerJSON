@@ -34,7 +34,7 @@
 
 	map.addLayer(new L.TileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'));	//base layer
 
-	var jsonLayer = new L.LayerJSON({url: "search.php?lat1={minlat}&lat2={maxlat}&lon1={minlon}&lon2={maxlon}"});
+	var jsonLayer = new L.LayerJSON({url: "search.php?lat1={lat1}&lat2={lat2}&lon1={lon1}&lon2={lon2}"});
 	
 	map.addLayer(jsonLayer);
 	
