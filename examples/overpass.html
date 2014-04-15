@@ -42,7 +42,6 @@
 		{
 			item = json.elements[i];
 			rjson.push({
-				title: item.tags.name || null,
 				loc: [item.lat, item.lon],
 				tags: item.tags
 			});
@@ -59,6 +58,7 @@
 						minShift: 800,
 						updateOutBounds: true,
 						filterData: filterJSON,
+						propertyTitle: 'tags.name',
 						buildPopup: htmlJSON
 					}));
 </script>

@@ -1,5 +1,5 @@
 /* 
- * Leaflet Dynamic JSON Layer v0.1.2 - 2014-04-10 
+ * Leaflet Dynamic JSON Layer v0.1.2 - 2014-04-15 
  * 
  * Copyright 2014 Stefano Cudini 
  * stefano.cudini@gmail.com 
@@ -30,10 +30,11 @@ L.LayerJSON = L.FeatureGroup.extend({
 		url: 'search.php?lat1={minlat}&lat2={maxlat}&lon1={minlon}&lon2={maxlon}',
 		jsonpParam: null,			//callback parameter name for jsonp request append to url
 		callData: null,				//alternative function that return data (if use $.ajax() set async=false)
-		propertyLoc: 'loc', 		//json property used as Latlng of marker
-		//if propertyLoc is array like: ['latname','lonname'] for select double fields(ex. ['lat','lon'] )
+		//TODO propertyItems: '', 			//json property used contains data items
 		propertyTitle: 'title', 	//json property used as title(popup, marker, icon)
-		filterData: null,				//function that filter marker by its data, run before onEachMarker
+		propertyLoc: 'loc', 		//json property used as Latlng of marker use array for select double fields(ex. ['lat','lon'] )
+									// support dotted format: 'prop.subprop.title'
+		filterData: null,			//function that filter marker by its data, run before onEachMarker
 		dataToMarker: null,			//function that will be used for creating markers from json points, similar to pointToLayer of L.GeoJSON
 		onEachMarker: null,			//function called on each marker created, similar to option onEachFeature of L.GeoJSON
 		layerTarget: null,			//pre-existing layer to add markers, is a LayerGroup or L.MarkerClusterGroup http://goo.gl/tvmu0
@@ -125,15 +126,29 @@ L.LayerJSON = L.FeatureGroup.extend({
 			L.FeatureGroup.prototype.clearLayers.call(this);
 		return this;
 	},
-	
+
+	_getPath: function(obj, prop) {
+		var parts = prop.split('.'),
+			last = parts.pop(),
+			len = parts.length,
+			cur = parts[0],
+			i = 1;
+
+		if(len > 0)
+			while((obj = obj[cur]) && i < len)
+				cur = parts[i++];
+
+		if(obj)
+			return obj[last];
+	},
+
 	_defaultBuildIcon: function(data, title) {
 		return new L.Icon.Default();
 	},
 	
 	_defaultDataToMarker: function(data, latlng) {	//make marker from data
 
-		var title = data[ this.options.propertyTitle ],
-			//TODO check propertyLoc and propertyTitle in addMarker
+		var title = this._getPath(data, this.options.propertyTitle),
 			markerOpts = L.Util.extend({icon: this._buildIcon(data,title), title: title }, data),
 			marker = new L.Marker(latlng, markerOpts ),
 			htmlPopup = null;
@@ -154,7 +169,7 @@ L.LayerJSON = L.FeatureGroup.extend({
 		else
 			latlng = L.latLng( data[propLoc] );
 
-		hash = [latlng.lat,latlng.lng].join() + data[this.options.propertyTitle];
+		hash = [latlng.lat,latlng.lng].join() + this._getPath(data, this.options.propertyTitle);
 
 		if(!this._markers[hash])
 			this._markers[hash] = this._dataToMarker(data, latlng);
@@ -229,7 +244,6 @@ L.LayerJSON = L.FeatureGroup.extend({
 				that.addMarker.call(that, json[k]);
 		});
 	},
-
 
 
 /////////////////ajax jsonp methods
