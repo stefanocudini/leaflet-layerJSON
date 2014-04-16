@@ -6,34 +6,36 @@ L.LayerJSON = L.FeatureGroup.extend({
 	includes: L.Mixin.Events,
 	//
 	//Managed Events:
-	//	Event			Data passed		Description
-	//  dataloading		{url}			fired before ajax/jsonp reques(useful for show gif loader)
-	//	dataloaded		{data}			fired on ajax/jsonp request success
+	//	Event			Data passed		 Description
+	//  dataloading		{req: url|bbox}	 fired before ajax/jsonp request, req is bbox if url option is null
+	//	dataloaded		{data: json}	 fired on ajax/jsonp request success
 	//
 	options: {
 		url: 'search.php?lat1={lat1}&lat2={lat2}&lon1={lon1}&lon2={lon2}',
 		jsonpParam: null,			//parameter name for jsonp requests
-		callData: null,				//custom function for data source
-		
+		callData: null,				//custom function for data source, params: (req: url|bbox, callback: func)		
+		filterData: null,			//function that filter marker by its data, run before onEachMarker
+		//
 		propertyItems: '', 			//json property used contains data items
 		propertyTitle: 'title', 	//json property used as title(popup, marker, icon)
 		propertyLoc: 'loc', 		//json property used as Latlng of marker use array for select double fields(ex. ['lat','lon'] )
-									// support dotted format: 'prop.subprop.title'
-		filterData: null,			//function that filter marker by its data, run before onEachMarker
+		//							// support dotted format: 'prop.subprop.title'
+		layerTarget: null,			//pre-existing layer to add markers, is a LayerGroup or L.MarkerClusterGroup http://goo.gl/tvmu0
 		dataToMarker: null,			//function that will be used for creating markers from json points, similar to pointToLayer of L.GeoJSON
 		onEachMarker: null,			//function called on each marker created, similar to option onEachFeature of L.GeoJSON
-		layerTarget: null,			//pre-existing layer to add markers, is a LayerGroup or L.MarkerClusterGroup http://goo.gl/tvmu0
 		buildPopup: null,			//function popup builder
 		optsPopup: null,			//popup options
 		buildIcon: null,			//function icon builder
+		//
 		minShift: 1000,				//min shift for update data(in meters)
 		updateOutBounds: true,		//request new data only if current bounds higher than last bounds
 		precision: 6,				//number of digit send to server for lat,lng precision
 		attribution: ''				//attribution text
 		//TODO option: enabled, if false 
 		//TODO methods: enable()/disable()
+		//TODO send map bounds decremented of certain margin		
 	},
-    
+
 	initialize: function(options) {			
 		L.FeatureGroup.prototype.initialize.call(this, []);
 		L.Util.setOptions(this, options);
@@ -54,7 +56,7 @@ L.LayerJSON = L.FeatureGroup.extend({
 		else
 			this._callData = this.options.callData;
 
-		this._dataRequest = null;
+		this._curReq = null;
 		this._center = null;
 		this._maxBounds = null;
 		this._markers = {};	//used for caching _dataToMarker builds		
@@ -203,27 +205,26 @@ L.LayerJSON = L.FeatureGroup.extend({
 		this.update();
 	},
 	
-	update: function(clear) {	//populate target layer
-	
-		var //clear = clear || false,
+	update: function() {	//populate target layer
+
+		var prec = this.options.precision,
 			bb = this._map.getBounds(),
 			sw = bb.getSouthWest(),
 			ne = bb.getNorthEast(),
-			//TODO send map bounds decremented
-			p = this.options.precision,
-			url = L.Util.template(this._dataUrl, {
-					lat1: sw.lat.toFixed(p), lat2: ne.lat.toFixed(p), 
-					lon1: sw.lng.toFixed(p), lon2: ne.lng.toFixed(p)
-				});
+			bbox = {
+				lat1: sw.lat.toFixed(prec), lat2: ne.lat.toFixed(prec),
+				lon1: sw.lng.toFixed(prec), lon2: ne.lng.toFixed(prec)
+			},
+			req = this._dataUrl ? L.Util.template(this._dataUrl, bbox) : bbox;
 
-		if(this._dataRequest)
-			this._dataRequest.abort();	//prevent parallel requests
+		if(this._curReq)
+			this._curReq.abort();	//prevent parallel requests
 
 		var that = this;
-		that.fire('dataloading', {url: url });	
-		this._dataRequest = this._callData(url, function(json) {//using always that inside function
+		that.fire('dataloading', {req: req });	
+		this._curReq = this._callData(req, function(json) {
 
-			that._dataRequest = null;
+			that._curReq = null;
 
 			if(that._filterData)
 				json = that._filterData(json);
@@ -233,7 +234,6 @@ L.LayerJSON = L.FeatureGroup.extend({
 
 			that.fire('dataloaded', {data: json});
 			
-			//that.clearLayers();
 			for(var k in json)
 				that.addMarker.call(that, json[k]);
 		});
