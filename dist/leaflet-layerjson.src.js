@@ -27,7 +27,7 @@ L.LayerJSON = L.FeatureGroup.extend({
 	//	dataloaded		{data: json}	 fired on ajax/jsonp request success
 	//
 	options: {
-		url: 'search.php?lat1={lat1}&lat2={lat2}&lon1={lon1}&lon2={lon2}',
+		url: '',					//url map: "search.php?lat1={lat1}&lat2={lat2}&lon1={lon1}&lon2={lon2}"
 		jsonpParam: null,			//parameter name for jsonp requests
 		callData: null,				//custom function for data source, params: (req: url|bbox, callback: func)		
 		filterData: null,			//function that filter marker by its data, run before onEachMarker
