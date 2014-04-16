@@ -13,7 +13,7 @@ L.LayerJSON = L.FeatureGroup.extend({
 	options: {
 		url: '',					//url map: "search.php?lat1={lat1}&lat2={lat2}&lon1={lon1}&lon2={lon2}"
 		jsonpParam: null,			//parameter name for jsonp requests
-		callData: null,				//custom function for data source, params: (req: url|bbox, callback: func)		
+		callData: null,				//custom function for data source, params: (req: url|bbox, callback: func), return {abort: func}
 		filterData: null,			//function that filter marker by its data, run before onEachMarker
 		//
 		propertyItems: '', 			//json property used contains data items
@@ -212,8 +212,8 @@ L.LayerJSON = L.FeatureGroup.extend({
 			sw = bb.getSouthWest(),
 			ne = bb.getNorthEast(),
 			bbox = {
-				lat1: sw.lat.toFixed(prec), lat2: ne.lat.toFixed(prec),
-				lon1: sw.lng.toFixed(prec), lon2: ne.lng.toFixed(prec)
+				lat1: parseFloat(sw.lat.toFixed(prec)), lat2: parseFloat(ne.lat.toFixed(prec)),
+				lon1: parseFloat(sw.lng.toFixed(prec)), lon2: parseFloat(ne.lng.toFixed(prec))
 			},
 			req = this._dataUrl ? L.Util.template(this._dataUrl, bbox) : bbox;
 
