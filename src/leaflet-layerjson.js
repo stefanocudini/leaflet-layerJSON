@@ -27,6 +27,7 @@ L.LayerJSON = L.FeatureGroup.extend({
 		optsPopup: null,			//popup options
 		buildIcon: null,			//function icon builder
 		//
+		caching: true,				//enable requests caching
 		minShift: 1000,				//min shift for update data(in meters)
 		updateOutBounds: true,		//request new data only if current bounds higher than last bounds
 		precision: 6,				//number of digit send to server for lat,lng precision
@@ -42,14 +43,14 @@ L.LayerJSON = L.FeatureGroup.extend({
 		this._dataToMarker = this.options.dataToMarker || this._defaultDataToMarker;
 		this._buildIcon = this.options.buildIcon || this._defaultBuildIcon;
 		this._filterData = this.options.filterData || null;
-		this._dataUrl = this.options.url;
+		this._hashUrl = this.options.url;
 		
-		if(this._dataUrl)
+		if(this._hashUrl)
 		{
 			this._callData = this.getAjax;
 			if(this.options.jsonpParam)
 			{
-				this._dataUrl += '&'+this.options.jsonpParam+'=';
+				this._hashUrl += '&'+this.options.jsonpParam+'=';
 				this._callData = this.getJsonp;
 			}
 		}
@@ -59,7 +60,7 @@ L.LayerJSON = L.FeatureGroup.extend({
 		this._curReq = null;
 		this._center = null;
 		this._maxBounds = null;
-		this._markers = {};	//used for caching _dataToMarker builds		
+		this._markersCache = {};	//used for caching _dataToMarker builds		
 	},
 
 	onAdd: function(map) { //console.info('onAdd');
@@ -113,6 +114,9 @@ L.LayerJSON = L.FeatureGroup.extend({
 	},
 	
 	clearLayers: function () {
+		
+		this._markersCache = {};	//cached gen markers
+
 		if(this.options.layerTarget)
 			this.options.layerTarget.clearLayers.call(this.options.layerTarget);
 		else
@@ -153,7 +157,6 @@ L.LayerJSON = L.FeatureGroup.extend({
 	},
 	
 	addMarker: function(data) {
-		//TODO empty this._markers sooner or later
 
 		var latlng, hash, propLoc = this.options.propertyLoc;
 
@@ -164,44 +167,46 @@ L.LayerJSON = L.FeatureGroup.extend({
 
 		hash = [latlng.lat,latlng.lng].join() + this._getPath(data, this.options.propertyTitle);
 
-		if(!this._markers[hash])
-			this._markers[hash] = this._dataToMarker(data, latlng);
+		if(!this._markersCache[hash])
+			this._markersCache[hash] = this._dataToMarker(data, latlng);
 
 		if(this.options.onEachMarker)//maybe useless
-			this.options.onEachMarker(data, this._markers[hash]);
+			this.options.onEachMarker(data, this._markersCache[hash]);
 
-		this.addLayer( this._markers[hash] );
+		this.addLayer( this._markersCache[hash] );
 	},
 
-	_updateMarkersCached: function(bounds) {
-		for(var i in this._markers)
-			if( bounds.contains(this._markers[i].getLatLng()) )
-				this.addLayer(this._markers[i]);
+	_markersCacheToLayer: function(bounds) {	//show cached markers to layer
+		for(var i in this._markersCache)
+			if( bounds.contains(this._markersCache[i].getLatLng()) )
+				this.addLayer(this._markersCache[i]);
 			else
-				this.removeLayer(this._markers[i]);
+				this.removeLayer(this._markersCache[i]);
 	},
-	
+
 	_onMove: function(e) {
-
 		var newCenter = this._map.getCenter(),
-			newBounds = this._map.getBounds();
+			newBounds = this._map.getBounds();		
+		 
+		if(this.options.caching) {
 
-			console.log(newCenter);
+			if( this.options.minShift && this._center.distanceTo(newCenter) < this.options.minShift )
+				return false;
+			else
+				this._center = newCenter;
 
-		if( this.options.minShift && this._center.distanceTo(newCenter) < this.options.minShift )
-			return false;
-		else
-			this._center = newCenter;
-
-		if( this.options.updateOutBounds && this._maxBounds.contains(newBounds) )//bounds not incremented
-		{
-			this._updateMarkersCached(newBounds);
-			//TODO maybe execute this ever
-			return false;
+			if( this.options.updateOutBounds && this._maxBounds.contains(newBounds) )//bounds not incremented
+			{
+				this._markersCacheToLayer(newBounds);
+				//TODO maybe execute this ever
+				return false;
+			}
+			else
+				this._maxBounds.extend(newBounds);
 		}
 		else
-			this._maxBounds.extend(newBounds);
-		
+		 	this.clearLayers();
+
 		this.update();
 	},
 	
@@ -211,18 +216,23 @@ L.LayerJSON = L.FeatureGroup.extend({
 			bb = this._map.getBounds(),
 			sw = bb.getSouthWest(),
 			ne = bb.getNorthEast(),
-			bbox = {
-				lat1: parseFloat(sw.lat.toFixed(prec)), lat2: parseFloat(ne.lat.toFixed(prec)),
-				lon1: parseFloat(sw.lng.toFixed(prec)), lon2: parseFloat(ne.lng.toFixed(prec))
-			},
-			req = this._dataUrl ? L.Util.template(this._dataUrl, bbox) : bbox;
+			bbox = [
+				[ parseFloat(sw.lat.toFixed(prec)), parseFloat(sw.lng.toFixed(prec)) ],
+				[ parseFloat(ne.lat.toFixed(prec)), parseFloat(ne.lng.toFixed(prec)) ]
+			];
 
-		if(this._curReq)
-			this._curReq.abort();	//prevent parallel requests
+		if(this._hashUrl)							//conver bbox to url string
+			bbox = L.Util.template(this._hashUrl, {
+					lat1: bbox[0][0], lon1: bbox[0][1],
+					lat2: bbox[1][0], lon2: bbox[1][1]
+				});
+
+		if(this._curReq && this._curReq.abort)
+			this._curReq.abort();		//prevent parallel requests
 
 		var that = this;
-		that.fire('dataloading', {req: req });	
-		this._curReq = this._callData(req, function(json) {
+		that.fire('dataloading', {req: bbox });	
+		this._curReq = this._callData(bbox, function(json) {
 
 			that._curReq = null;
 

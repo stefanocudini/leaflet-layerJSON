@@ -1,0 +1,78 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"> 
+<html xmlns="http://www.w3.org/1999/xhtml"> 
+<head> 
+<title></title> 
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" /> 
+<link rel="stylesheet" href="/maps/leaflet/dist/leaflet.css" />
+<link rel="stylesheet" href="../style.css" />
+</head>
+<body>
+<h3><a href="../"><big>◄</big> Leaflet Dynamic JSON Layer</a></h3>
+<h4>Data by Callback Example: <em>load data from Javascript Static Obejct and highlights nearby markers to the center</em></h4>
+<div style="clear:both">
+	<div id="map"></div>
+</div>
+<script src="/maps/leaflet/dist/leaflet.js"></script>
+<script src="../src/leaflet-layerjson.js"></script>
+<script>
+	//sample data values for populate map
+	var data = [
+		{"loc":[41.536175,13.273590], "title":"aquamarine"},
+		{"loc":[41.575730,13.002411], "title":"black"},
+		{"loc":[41.807149,13.162994], "title":"blue"},
+		{"loc":[41.507149,13.172994], "title":"chocolate"},
+		{"loc":[41.847149,14.132994], "title":"coral"},
+		{"loc":[41.219190,13.062145], "title":"cyan"},
+		{"loc":[41.344190,13.242145], "title":"darkblue"},	
+		{"loc":[41.679190,13.122145], "title":"darkred"},
+		{"loc":[41.329190,13.192145], "title":"darkgray"},
+		{"loc":[41.379290,13.122545], "title":"dodgerblue"},
+		{"loc":[41.409190,13.362145], "title":"gray"},
+		{"loc":[41.794008,12.583884], "title":"green"},	
+		{"loc":[41.805008,12.982884], "title":"greenyellow"},
+		{"loc":[41.575330,13.102411], "title":"red"},
+		{"loc":[41.516175,13.373590], "title":"rosybrown"},
+		{"loc":[41.506175,13.173590], "title":"royalblue"},
+		{"loc":[41.836175,13.673590], "title":"salmon"},
+		{"loc":[41.796175,13.570590], "title":"seagreen"},
+		{"loc":[41.436175,13.573590], "title":"seashell"},
+		{"loc":[41.336175,13.973590], "title":"silver"},
+		{"loc":[41.236175,13.273590], "title":"skyblue"},
+		{"loc":[41.546175,13.473590], "title":"yellow"},
+		{"loc":[41.239190,13.032145], "title":"white"}
+	];
+
+	var map = L.map('map', {
+			zoom: 11,
+			center: L.latLng(data[0].loc),
+			layers: L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png')
+		});
+
+	L.layerJSON({
+		caching: false,				//disable markers caching and regenerate every time
+		callData: function(bbox, callback) {
+
+			var cen = L.latLngBounds(bbox).getCenter(),	//center of current map viewport
+				rData = [];								//returned data
+
+			for(var i in data)
+				rData.push({loc: data[i].loc, opacity: L.latLng(data[i].loc).distanceTo(cen) > 7000 ? 0.3 : 1 });
+			//Highlights nearby markers to the center
+
+			callback(rData);	//render data to layer
+
+			// return {
+			// 	abort: function() {} //called to stop previous requests on map move
+			// };
+		},
+		dataToMarker: function(data, latlng) {	//build marker with opacity
+			return L.marker(latlng, {opacity: data.opacity} );
+		}
+	}).addTo(map);
+
+</script>
+<div id="copy"><a href="http://labs.easyblog.it/">Labs</a> &bull; <a rel="author" href="http://labs.easyblog.it/stefano-cudini/">Stefano Cudini</a></div>
+<a href="https://github.com/stefanocudini/leaflet-layerJSON"><img id="ribbon" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"></a>
+<script type="text/javascript" src="/labs.analytics.js"></script>
+</body>
+</html>
