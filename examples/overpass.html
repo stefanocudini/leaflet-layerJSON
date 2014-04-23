@@ -49,6 +49,14 @@ L.layerJSON({
 		propertyItems: 'elements',
 		propertyTitle: 'tags.name',
 		propertyLoc: ['lat','lon'],
+		buildIcon: function(data, title) {
+			return new L.Icon({
+				iconUrl:'bar.png',
+				iconSize: new L.Point(32, 37),
+				iconAnchor: new L.Point(18, 37),
+				popupAnchor: new L.Point(0, -37)
+			});
+		},
 		buildPopup: function(data, marker) {
 			return data.tags.name || null;
 		}
