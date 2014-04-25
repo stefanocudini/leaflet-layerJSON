@@ -43,7 +43,7 @@ L.LayerJSON = L.FeatureGroup.extend({
 		optsPopup: null,			//popup options
 		buildIcon: null,			//function icon builder
 		//
-		minZoom: 10,
+		minZoom: 10,				//min zoom for call data
 		caching: true,				//enable requests caching
 		minShift: 1000,				//min shift for update data(in meters)
 		updateOutBounds: true,		//request new data only if current bounds higher than last bounds
