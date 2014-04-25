@@ -27,6 +27,7 @@ L.LayerJSON = L.FeatureGroup.extend({
 		optsPopup: null,			//popup options
 		buildIcon: null,			//function icon builder
 		//
+		minZoom: 10,
 		caching: true,				//enable requests caching
 		minShift: 1000,				//min shift for update data(in meters)
 		updateOutBounds: true,		//request new data only if current bounds higher than last bounds
@@ -185,9 +186,13 @@ L.LayerJSON = L.FeatureGroup.extend({
 	},
 
 	_onMove: function(e) {
-		var newCenter = this._map.getCenter(),
+		var newZoom = this._map.getZoom(),
+			newCenter = this._map.getCenter(),
 			newBounds = this._map.getBounds();		
-		 
+
+		if(newZoom < this.options.minZoom)
+			return false;
+
 		if(this.options.caching) {
 
 			if( this.options.minShift && this._center.distanceTo(newCenter) < this.options.minShift )
