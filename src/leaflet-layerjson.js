@@ -168,13 +168,14 @@ L.LayerJSON = L.FeatureGroup.extend({
 
 		hash = [latlng.lat,latlng.lng].join() + this._getPath(data, this.options.propertyTitle);
 
-		if(!this._markersCache[hash])
+		if(typeof this._markersCache[hash] === 'undefined')
 			this._markersCache[hash] = this._dataToMarker(data, latlng);
 
 		if(this.options.onEachMarker)//maybe useless
 			this.options.onEachMarker(data, this._markersCache[hash]);
-
-		this.addLayer( this._markersCache[hash] );
+		
+		if(this._markersCache[hash])
+			this.addLayer( this._markersCache[hash] );
 	},
 
 	_markersCacheToLayer: function(bounds) {	//show cached markers to layer
