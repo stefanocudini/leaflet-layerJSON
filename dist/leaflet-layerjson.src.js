@@ -196,10 +196,15 @@ L.LayerJSON = L.FeatureGroup.extend({
 
 	_markersCacheToLayer: function(bounds) {	//show cached markers to layer
 		for(var i in this._markersCache)
-			if( bounds.contains(this._markersCache[i].getLatLng()) )
-				this.addLayer(this._markersCache[i]);
-			else
-				this.removeLayer(this._markersCache[i]);
+		{
+			if(this._markersCache[i])
+			{
+				if(bounds.contains(this._markersCache[i].getLatLng()) )
+					this.addLayer(this._markersCache[i]);
+				else
+					this.removeLayer(this._markersCache[i]);
+			}
+		}
 	},
 
 	_onMove: function(e) {
