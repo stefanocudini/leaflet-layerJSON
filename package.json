@@ -18,6 +18,7 @@
     "map",
     "leaflet"
   ],
+  "main": "dist/leaflet-layerjson.min.js",
   "dependencies": {
     "leaflet": "*"
   },
