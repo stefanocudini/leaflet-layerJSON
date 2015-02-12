@@ -29,6 +29,7 @@ Data Source:
 Filtering:
 * **propertyItems** json property used contains data items
 * **propertyLoc** json property used as Latlng of marker, if is array: *['lat','lon']* select double fields
+* **locAsGeoJSON** interpret location data as [lon, lat] value pair instead of [lat, lon]
 * **propertyTitle** json property used as title in marker
 * **filterData** function for pre-filter data
 
