@@ -19,6 +19,7 @@ L.LayerJSON = L.FeatureGroup.extend({
 		propertyItems: '', 			//json property used contains data items
 		propertyTitle: 'title', 	//json property used as title(popup, marker, icon)
 		propertyLoc: 'loc', 		//json property used as Latlng of marker use array for select double fields(ex. ['lat','lon'] )
+		locAsGeoJSON: false, 		//interpret location data as [lon, lat] value pair instead of [lat, lon]
 		//							// support dotted format: 'prop.subprop.title'
 		layerTarget: null,			//pre-existing layer to add markers, is a LayerGroup or L.MarkerClusterGroup http://goo.gl/tvmu0
 		dataToMarker: null,			//function that will be used for creating markers from json points, similar to pointToLayer of L.GeoJSON
@@ -161,10 +162,17 @@ L.LayerJSON = L.FeatureGroup.extend({
 
 		var latlng, hash, propLoc = this.options.propertyLoc;
 
-		if( L.Util.isArray(propLoc) )
+		if( L.Util.isArray(propLoc) ) {
 			latlng = L.latLng( parseFloat(data[propLoc[0]]), parseFloat(data[propLoc[1]]) );
-		else
-			latlng = L.latLng( this._getPath(data, propLoc) );
+		}
+		else {
+			if (this.options.locAsGeoJSON) {
+				var lnglat = this._getPath(data, propLoc);
+				latlng = L.latLng( lnglat[1], lnglat[0] );
+			} else {
+				latlng = L.latLng( this._getPath(data, propLoc) );
+			}
+		}
 
 		hash = [latlng.lat,latlng.lng].join() + this._getPath(data, this.options.propertyTitle);
 
