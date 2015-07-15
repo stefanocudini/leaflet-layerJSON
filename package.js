@@ -1,4 +1,6 @@
 Package.describe({
+	name: 'leaflet-layerjson',
+	version: '0.1.7',
 	summary: "Leaflet Dynamic JSON Layer"
 });
 

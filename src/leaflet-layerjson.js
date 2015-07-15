@@ -65,7 +65,7 @@ L.LayerJSON = L.FeatureGroup.extend({
 		this._markersCache = {};	//used for caching _dataToMarker builds
 	},
 
-	onAdd: function(map) { //console.info('onAdd');
+	onAdd: function(map) {
 
 		L.FeatureGroup.prototype.onAdd.call(this, map);		//set this._map
 		this._center = map.getCenter();
@@ -79,7 +79,7 @@ L.LayerJSON = L.FeatureGroup.extend({
 		this.update();
 	},
 
-	onRemove: function(map) { //console.info('onRemove');
+	onRemove: function(map) {
 
 		map.off({
             moveend: this._onMove,
@@ -169,7 +169,8 @@ L.LayerJSON = L.FeatureGroup.extend({
 		var latlng, hash, propLoc = this.options.propertyLoc;
 
 		if( L.Util.isArray(propLoc) ) {
-			latlng = L.latLng( parseFloat(data[propLoc[0]]), parseFloat(data[propLoc[1]]) );
+			latlng = L.latLng( parseFloat( this._getPath(data, propLoc[0]) ),
+							   parseFloat( this._getPath(data, propLoc[1]) )  );
 		}
 		else {
 			if (this.options.locAsGeoJSON) {
@@ -300,14 +301,13 @@ L.LayerJSON = L.FeatureGroup.extend({
 			var response = {};
 		    if (request.readyState === 4 && request.status === 200) {
 		    	try {
-					if(window.JSON) {
+					if(window.JSON)
 				        response = JSON.parse(request.responseText);
-					} else {
+					else
 						response = eval("("+ request.responseText + ")");
-					}
 		    	} catch(err) {
-		    		console.info(err);
-		    		response = {};
+		    		response = {};		    		
+		    		throw new Error('Ajax response is not JSON');
 		    	}
 		        cb(response);
 		    }
@@ -318,16 +318,20 @@ L.LayerJSON = L.FeatureGroup.extend({
 
 	getJsonp: function(url, cb) {  //extract searched records from remote jsonp service
 		var body = document.getElementsByTagName('body')[0],
-			script = L.DomUtil.create('script','layerjson-jsonp', body );
+			script = L.DomUtil.create('script','leaflet-layerjson-jsonp', body );
 
-		L.LayerJSON.callJsonp = function(data) {	//jsonp callback
-			//TODO data = filterJSON.apply(that,[data]);
+		//JSONP callback
+		L.LayerJSON.callJsonp = function(data) {
 			cb(data);
 			body.removeChild(script);
 		}
 		script.type = 'text/javascript';
 		script.src = url+'L.LayerJSON.callJsonp';
-		return {abort: function() { script.parentNode.removeChild(script); } };
+		return {
+			abort: function() {
+				script.parentNode.removeChild(script);
+			}
+		};
 	}
 });
 
