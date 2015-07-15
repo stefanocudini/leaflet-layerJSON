@@ -7,7 +7,7 @@ A Dynamic Leaflet Layer that load JSON data in layer in the form of markers with
 
 and minimize remote requests with caching system
 
-Tested in Leaflet 0.7
+Tested in Leaflet 0.7.3
 
 
 How to use
