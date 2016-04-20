@@ -30,10 +30,7 @@
 	var jsonLayer = new L.LayerJSON({url: "search.php?lat1={lat1}&lat2={lat2}&lon1={lon1}&lon2={lon2}"});
 
 	jsonLayer.on('dataloaded', function(e) {	//show loaded data!
-		if(JSON)
-			L.DomUtil.get('data').innerHTML = JSON.stringify( e.data, null, ' ' );
-		else
-			console.log(e.data);
+		L.DomUtil.get('data').innerHTML = JSON.stringify( e.data, null, ' ' );
 	});
 	
 	map.addLayer(jsonLayer);
