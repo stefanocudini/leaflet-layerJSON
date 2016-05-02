@@ -71,20 +71,14 @@ L.LayerJSON = L.FeatureGroup.extend({
 		this._center = map.getCenter();
 		this._maxBounds = map.getBounds();
 
-        map.on({
-            moveend: this._onMove,
-            zoomend: this._onMove
-        }, this);
+        map.on('moveend zoomend', this._onMove, this);
 
 		this.update();
 	},
 
 	onRemove: function(map) {
 
-		map.off({
-            moveend: this._onMove,
-            zoomend: this._onMove
-        }, this); //FIXME not work!
+		map.off('moveend zoomend', this._onMove, this);
 
 		L.FeatureGroup.prototype.onRemove.call(this, map);
 
@@ -130,6 +124,18 @@ L.LayerJSON = L.FeatureGroup.extend({
 		else
 			L.FeatureGroup.prototype.clearLayers.call(this);
 		return this;
+	},
+	
+	_debouncer: function(func, timeout) {
+		var timeoutID;
+		timeout = timeout || 300;
+		return function () {
+			var scope = this , args = arguments;
+			clearTimeout( timeoutID );
+			timeoutID = setTimeout( function () {
+				func.apply( scope , Array.prototype.slice.call( args ) );
+			}, timeout);
+		};
 	},
 
 	_getPath: function(obj, prop) {

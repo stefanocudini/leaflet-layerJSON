@@ -5,6 +5,17 @@
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" /> 
 <link rel="stylesheet" href="/maps/leaflet/dist/leaflet.css" />
 <link rel="stylesheet" href="../style.css" />
+<style type="text/css">
+	#map {
+		position: absolute;	
+		bottom: 0;
+		left: 0;
+		right: 0;
+		top: 80px;
+		width:auto;
+		height: auto;
+	}
+</style>
 </head>
 <body>
 <h3><a href="../"><big>◄</big> Leaflet Dynamic JSON Layer</a></h3>
@@ -51,6 +62,8 @@
 	L.layerJSON({
 		caching: false,				//disable markers caching and regenerate every time
 		callData: function(bbox, callback) {
+
+			console.log('callData',bbox.toString())
 
 			var cen = L.latLngBounds(bbox).getCenter(),	//center of current map viewport
 				rData = [];								//returned data
