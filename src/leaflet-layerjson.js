@@ -27,6 +27,7 @@ L.LayerJSON = L.FeatureGroup.extend({
 		buildPopup: null,			//function popup builder
 		optsPopup: null,			//popup options
 		buildIcon: null,			//function icon builder
+		hashGenerator: null,		//function to generate a unique element per feature. Takes a data point and a latlng, must return a unique string
 		//
 		minZoom: 10,				//min zoom for call data
 		caching: true,				//enable requests caching
@@ -43,6 +44,7 @@ L.LayerJSON = L.FeatureGroup.extend({
 		L.FeatureGroup.prototype.initialize.call(this, []);
 		L.Util.setOptions(this, options);
 		this._dataToMarker = this.options.dataToMarker || this._defaultDataToMarker;
+		this._hashGenerator = this.options.hashGenerator || this._defaultHashGenerator;
 		this._buildIcon = this.options.buildIcon || this._defaultBuildIcon;
 		this._filterData = this.options.filterData || null;
 		this._hashUrl = this.options.url;
@@ -170,6 +172,10 @@ L.LayerJSON = L.FeatureGroup.extend({
 		return marker;
 	},
 
+	_defaultHashGenerator: function(data, latlng) {
+		return [latlng.lat,latlng.lng].join() + this._getPath(data, this.options.propertyTitle);
+  },
+
 	addMarker: function(data) {
 
 		var latlng, hash, propLoc = this.options.propertyLoc;
@@ -187,7 +193,7 @@ L.LayerJSON = L.FeatureGroup.extend({
 			}
 		}
 
-		hash = [latlng.lat,latlng.lng].join() + this._getPath(data, this.options.propertyTitle);
+		hash = this._hashGenerator(data, latlng);
 
 		if(typeof this._markersCache[hash] === 'undefined')
 			this._markersCache[hash] = this._dataToMarker(data, latlng);
