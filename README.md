@@ -1,4 +1,4 @@
-Leaflet Dynamic JSON Layer
+Leaflet JSON Layer
 ============
 
 Simple way for transform any JSON data source in a Leaflet Layer!

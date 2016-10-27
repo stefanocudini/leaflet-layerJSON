@@ -1,11 +1,11 @@
 body {
-	background: #ddf;
-	color:#669;
+	background: #def;
+	color:#456;
 	margin:20px;
 }
 
 h2,h3,h4,h5 {margin:6px 0}
-a {text-decoration: none;}
+a {text-decoration: none}
 p {margin:0 0 20px 0}
 ul {
 	font-size:.85em;

@@ -1,7 +1,7 @@
 Package.describe({
 	name: 'stefcud:leaflet-layerjson',
 	version: '0.1.8',
-	summary: "Leaflet Dynamic JSON Layer",
+	summary: "Leaflet JSON Layer",
 	git: "https://github.com/stefanocudini/leaflet-layerjson.git"	
 });
 

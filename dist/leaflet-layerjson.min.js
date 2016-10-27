@@ -1,5 +1,5 @@
 /* 
- * Leaflet Dynamic JSON Layer v0.1.8 - 2016-05-02 
+ * Leaflet JSON Layer v0.1.8 - 2016-10-27 
  * 
  * Copyright 2016 Stefano Cudini 
  * stefano.cudini@gmail.com 
