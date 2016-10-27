@@ -8,7 +8,7 @@
 </head>
 <body>
 <h3><a href="../"><big>◄</big> Leaflet JSON Layer</a></h3>
-<h4>AJAX Example: <em>load json data by Ajax request</em></h4>
+<h4>jQuery Example: <em>load json data by Ajax using jQuery</em></h4>
 <p>
 	For simplicity in this example the server side distributes data always random irrespective of the coordinates, in a real case much more likely server<br />
 	side there will be a <b>spatial database</b> that returns data inside requested <b>bounding box</b>.
@@ -18,22 +18,36 @@
 	<div id="arrow">⟩</div>
 	<div id="map"></div>
 </div>
+<script src="https://code.jquery.com/jquery-2.2.4.min.js"></script>
+
 <script src="/maps/leaflet/dist/leaflet.js"></script>
 <script src="../src/leaflet-layerjson.js"></script>
 <script>
 
-	var map = new L.Map('map', {zoom: 9, center: new L.latLng([41.575330,13.102411]) });
-	map.addLayer(new L.TileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'));	//base layer
-
-	var jsonLayer = new L.LayerJSON({url: "search.php?lat1={lat1}&lat2={lat2}&lon1={lon1}&lon2={lon2}"});
-
-	jsonLayer.on('dataloaded', function(e) {	//show loaded data!
-		L.DomUtil.get('data').innerHTML = JSON.stringify( e.data, null, ' ' );
+	var map = new L.Map('map', {
+		zoom: 9,
+		center: new L.latLng([41.575330,13.102411]),
+		layers: new L.TileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png')
 	});
-	
-	map.addLayer(jsonLayer);
 
-	map.addControl(new L.Control.Layers({},{'JSON Data Layer': jsonLayer},{collapsed:false}));
+	L.layerJSON({
+		caching: false,	
+		callData: function(bbox, callback) {
+			
+			return jQuery.ajax({
+				url: "search.php",
+				data: {
+					lat1: bbox[0][0], lon1: bbox[0][1],
+					lat2: bbox[1][0], lon2: bbox[1][1]
+				},
+				success: callback
+			});
+		}
+	})
+	.on('dataloaded', function(e) {
+		$('#data').text( JSON.stringify( e.data, null, ' ' ) );
+	})
+	.addTo(map);
 
 </script>
 <div id="copy"><a href="http://labs.easyblog.it/">Labs</a> &bull; <a rel="author" href="http://labs.easyblog.it/stefano-cudini/">Stefano Cudini</a></div>
