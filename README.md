@@ -24,7 +24,7 @@ Options
 Data Source:
 * **url** remote url,
 * **jsonpParam** callback parameter name for jsonp request append to url
-* **callData** alternative function that return data (if use *$.ajax()* set async=false)
+* **callData** custom function for data source, params: (req: url|bbox, callback: func), return {abort: func} or jQuery jqXHR Object
 
 Filtering:
 * **propertyItems** json property used contains data items
