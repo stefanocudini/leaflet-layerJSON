@@ -19,6 +19,7 @@ L.LayerJSON = L.FeatureGroup.extend({
 		propertyItems: '', 			//json property used contains data items
 		propertyTitle: 'title', 	//json property used as title(popup, marker, icon)
 		propertyLoc: 'loc', 		//json property used as Latlng of marker use array for select double fields(ex. ['lat','lon'] )
+		propertyId: 'id',			//json property used to uniquely identify data items
 		locAsGeoJSON: false, 		//interpret location data as [lon, lat] value pair instead of [lat, lon]
 		//							// support dotted format: 'prop.subprop.title'
 		layerTarget: null,			//pre-existing layer to add markers, is a LayerGroup or L.MarkerClusterGroup http://goo.gl/tvmu0
@@ -172,25 +173,28 @@ L.LayerJSON = L.FeatureGroup.extend({
 
 	addMarker: function(data) {
 
-		var latlng, hash, propLoc = this.options.propertyLoc;
+		var loc, hash, propLoc = this.options.propertyLoc;
 
 		if( L.Util.isArray(propLoc) ) {
-			latlng = L.latLng( parseFloat( this._getPath(data, propLoc[0]) ),
+			loc = L.latLng( parseFloat( this._getPath(data, propLoc[0]) ),
 							   parseFloat( this._getPath(data, propLoc[1]) )  );
 		}
 		else {
 			if (this.options.locAsGeoJSON) {
 				var lnglat = this._getPath(data, propLoc);
-				latlng = L.latLng( lnglat[1], lnglat[0] );
+				loc = L.latLng( lnglat[1], lnglat[0] );
 			} else {
-				latlng = L.latLng( this._getPath(data, propLoc) );
+				loc = L.latLng( this._getPath(data, propLoc) );
 			}
 		}
 
-		hash = [latlng.lat,latlng.lng].join() + this._getPath(data, this.options.propertyTitle);
+		if(this.options.propertyId)
+			hash = this._getPath(data, this.options.propertyId);
+		else
+			hash = loc.lat+''+loc.lng+''+this._getPath(data, this.options.propertyTitle);
 
 		if(typeof this._markersCache[hash] === 'undefined')
-			this._markersCache[hash] = this._dataToMarker(data, latlng);
+			this._markersCache[hash] = this._dataToMarker(data, loc);
 
 		if(this.options.onEachMarker)//maybe useless
 			this.options.onEachMarker(data, this._markersCache[hash]);
@@ -199,12 +203,23 @@ L.LayerJSON = L.FeatureGroup.extend({
 			this.addLayer( this._markersCache[hash] );
 	},
 
+	_contains: function(bounds, el) {
+		var loc;
+		
+		if(el.getLatLng)
+			loc = el.getLatLng();
+		else if(el.getBounds)
+			loc = el.getBounds();
+
+		return bounds.contains(loc);
+	},
+
 	_markersCacheToLayer: function(bounds) {	//show cached markers to layer
 		for(var i in this._markersCache)
 		{
 			if(this._markersCache[i])
 			{
-				if(bounds.contains(this._markersCache[i].getLatLng()) )
+				if(this._contains(bounds, this._markersCache[i]) )
 					this.addLayer(this._markersCache[i]);
 				else
 					this.removeLayer(this._markersCache[i]);

@@ -8,7 +8,7 @@
 </head>
 <body>
 <h3><a href="../"><big>◄</big> Leaflet JSON Layer</a></h3>
-<h4>Example: <em>Show Bars in Rome</em></h4>
+<h4>Example: <em>Load Paths and Polygons</em></h4>
 <div id="post-it">
 	Using: <b><a href="http://wiki.openstreetmap.org/wiki/Overpass_API">Overpass API</a></b>
 	<br /><br />
@@ -19,43 +19,45 @@
 </div>
 <div style="position:relative;float:left">
 	<div id="map"></div>
-	<div id="loader"></div>
 </div>
-<script src="/maps/leaflet/dist/leaflet.js"></script>
+
+<script src="https://code.jquery.com/jquery-2.2.4.min.js"></script>
+<script src="https://unpkg.com/osmtogeojson@2.2.12/osmtogeojson.js"></script>
+
+<script src="/maps/leaflet/dist/leaflet-src.js"></script>
 <script src="../src/leaflet-layerjson.js"></script>
 <script>
 
 	var map = L.map('map', {
 			zoom: 15,
 			minZoom:14,
-			center: new L.latLng([41.898699, 12.472915]),
+			center: L.latLng([41.931177, 12.500853]),
 			layers: L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png')
-		}),
-		loader = L.DomUtil.get('loader');
+		});
 
 	L.layerJSON({
-		url: 'http://overpass-api.de/api/interpreter?data=[out:json];node({lat1},{lon1},{lat2},{lon2})[amenity=bar];out;',
-		propertyItems: 'elements',
-		propertyTitle: 'tags.name',
-		propertyLoc: ['lat','lon'],
-		buildIcon: function(data, title) {
+		callData: function(bbox, cb) {
 			
-			return new L.Icon({
-				iconUrl:'bar.png',
-				iconSize: new L.Point(32, 37),
-				iconAnchor: new L.Point(18, 37),
-				popupAnchor: new L.Point(0, -37)
+			return jQuery.ajax({
+				url: 'http://overpass-api.de/api/interpreter',
+				data: {
+					data: L.Util.template('way({lat1},{lon1},{lat2},{lon2})[highway="path"];(._;>;);out;', {
+						lat1: bbox[0][0], lon1: bbox[0][1],
+						lat2: bbox[1][0], lon2: bbox[1][1]
+					})
+				},
+				success: function(xml) {
+					var geojson = osmtogeojson.toGeojson(xml);					
+					cb( geojson.features )
+				}
 			});
 		},
-		buildPopup: function(data, marker) {
-			return data.tags.name || null;
+		dataToMarker: function(data) {
+			
+			return L.GeoJSON.geometryToLayer(data, function(d) {
+				return L.circleMarker(d.geometry.coordinates.reverse(), {color:'red',radius:8});
+			});
 		}
-	})
-	.on('dataloading',function(e) {
-		loader.style.display = 'block';
-	})
-	.on('dataloaded',function(e) {
-		loader.style.display = 'none';
 	})
 	.addTo(map);
 
