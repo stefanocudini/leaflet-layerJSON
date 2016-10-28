@@ -291,8 +291,10 @@ L.LayerJSON = L.FeatureGroup.extend({
 
 			that.fire('dataloaded', {data: json});
 
-			for(var k in json)
-				that.addMarker.call(that, json[k]);
+			for (var k in json) {
+			    if (!isNaN(parseFloat(k)) && isFinite(k))
+			        that.addMarker.call(that, json[k]);
+			}
 		});
 	},
 
