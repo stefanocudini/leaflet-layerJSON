@@ -56,7 +56,7 @@ Where
 **Source:**
 
 [Github](https://github.com/stefanocudini/leaflet-layerjson)  
-[Bitbucket](https://bitbucket.org/zakis_/leaflet-layerjson)  
+[Bitbucket](https://bitbucket.org/stefanocudini/leaflet-layerjson)  
 [NPM](https://npmjs.org/package/leaflet-layerjson)  
 [Atmosphere](https://atmosphere.meteor.com/package/leaflet-layerjson)
 
