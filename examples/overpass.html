@@ -3,25 +3,27 @@
 <head> 
 <title>Leaflet JSON Layer</title> 
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" /> 
-<link rel="stylesheet" href="/maps/leaflet/dist/leaflet.css" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<link rel="stylesheet" href="https://unpkg.com/leaflet@0.7.7/dist/leaflet.css" />
+
 <link rel="stylesheet" href="../style.css" />
 </head>
 <body>
-<h3><a href="../"><big>◄</big> Leaflet JSON Layer</a></h3>
-<h4>Example: <em>Show Bars in Rome</em></h4>
-<div id="post-it">
-	Using: <b><a href="http://wiki.openstreetmap.org/wiki/Overpass_API">Overpass API</a></b>
-	<br /><br />
-	Service offer by <br />
-	<b><a href="http://overpass-api.de/">overpass-api.de</a></b>
-	<br /><br />
-	Data offer by <a href="http://osm.org">OpenStreetMap.org</a>
-</div>
-<div style="position:relative;float:left">
-	<div id="map"></div>
-	<div id="loader"></div>
-</div>
-<script src="/maps/leaflet/dist/leaflet.js"></script>
+	<h3><a href="../"><big>◄</big> Leaflet JSON Layer</a></h3>
+	<h4>Example: <em>Show Bars in Rome</em></h4>
+	<div id="post-it">
+		Using: <b><a href="http://wiki.openstreetmap.org/wiki/Overpass_API">Overpass API</a></b>
+		<br /><br />
+		Service offer by <br />
+		<b><a href="http://overpass-api.de/">overpass-api.de</a></b>
+		<br /><br />
+		Data offer by <a href="http://osm.org">OpenStreetMap.org</a>
+	</div>
+	<div style="">
+		<div id="map"></div>
+		<div id="loader"></div>
+	</div>
+<script src="https://unpkg.com/leaflet@0.7.7/dist/leaflet.js"></script>
 <script src="../src/leaflet-layerjson.js"></script>
 <script>
 

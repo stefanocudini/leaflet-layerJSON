@@ -1,7 +1,7 @@
 /* 
- * Leaflet JSON Layer v0.2.0 - 2016-10-28 
+ * Leaflet JSON Layer v0.2.2 - 2017-08-08 
  * 
- * Copyright 2016 Stefano Cudini 
+ * Copyright 2017 Stefano Cudini 
  * stefano.cudini@gmail.com 
  * http://labs.easyblog.it/ 
  * 
@@ -19,7 +19,7 @@
 
 L.LayerJSON = L.FeatureGroup.extend({
 
-	includes: L.Mixin.Events,
+	includes: L.version[0] =='1' ? L.Evented : L.Mixin.Events,
 	//
 	//Managed Events:
 	//	Event			Data passed		 Description
@@ -307,8 +307,10 @@ L.LayerJSON = L.FeatureGroup.extend({
 
 			that.fire('dataloaded', {data: json});
 
-			for(var k in json)
-				that.addMarker.call(that, json[k]);
+			for (var k in json) {
+			    if (!isNaN(parseFloat(k)) && isFinite(k))
+			        that.addMarker.call(that, json[k]);
+			}
 		});
 	},
 
