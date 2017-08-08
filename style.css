@@ -20,12 +20,8 @@ li {
 	height:340px;
 }
 #post-it {
-	position: absolute;
-	left:620px;
-	top: 80px; 
-	width:9em;
-	height:8em;
-	margin-left:2em;
+	width:120px;
+	height:120px;
 	padding:1em;
 	float:left;
 	background:#fbf5bf;
@@ -42,10 +38,8 @@ li {
 	width: 50px;
 }
 #data {
-	display:block;
-	float:left;
-	width:220px;
-	height:380px;
+	width:100%;
+	height:150px;
 	background:#eee;
 	border:2px solid #669;
 	padding:2px;
