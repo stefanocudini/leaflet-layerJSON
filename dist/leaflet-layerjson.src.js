@@ -1,5 +1,5 @@
 /* 
- * Leaflet JSON Layer v0.2.2 - 2017-08-08 
+ * Leaflet JSON Layer v0.2.3 - 2017-08-08 
  * 
  * Copyright 2017 Stefano Cudini 
  * stefano.cudini@gmail.com 
@@ -19,7 +19,7 @@
 
 L.LayerJSON = L.FeatureGroup.extend({
 
-	includes: L.version[0] =='1' ? L.Evented : L.Mixin.Events,
+	includes: L.version[0] =='1' ? L.Evented.prototype : L.Mixin.Events,
 	//
 	//Managed Events:
 	//	Event			Data passed		 Description
