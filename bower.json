@@ -1,6 +1,6 @@
 {
   "name": "leaflet-layerjson",
-  "version": "0.2.3",
+  "version": "0.2.5",
   "main": "dist/leaflet-layerjson.min.js",
   "ignore": [
     "**/.*",

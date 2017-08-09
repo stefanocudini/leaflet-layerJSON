@@ -3,7 +3,7 @@
 
 L.LayerJSON = L.FeatureGroup.extend({
 
-	includes: L.version[0] =='1' ? L.Evented.prototype : L.Mixin.Events,
+	includes: L.version[0]==='1' ? L.Evented.prototype : L.Mixin.Events,
 	//
 	//Managed Events:
 	//	Event			Data passed		 Description
@@ -31,7 +31,7 @@ L.LayerJSON = L.FeatureGroup.extend({
 		//
 		minZoom: 10,				//min zoom for call data
 		caching: true,				//enable requests caching
-		minShift: 1000,				//min shift for update data(in meters)
+		minShift: 1000,				//min shift before update data(in meters)
 		updateOutBounds: true,		//request new data only if current bounds higher than last bounds
 		precision: 6,				//number of digit send to server for lat,lng precision
 		attribution: ''				//attribution text
@@ -234,13 +234,13 @@ L.LayerJSON = L.FeatureGroup.extend({
 
 		if(newZoom < this.options.minZoom)
 			return false;
+			
+		if( this.options.minShift && this._center.distanceTo(newCenter) < this.options.minShift )
+			return false;
+		else
+			this._center = newCenter;
 
 		if(this.options.caching) {
-
-			if( this.options.minShift && this._center.distanceTo(newCenter) < this.options.minShift )
-				return false;
-			else
-				this._center = newCenter;
 
 			if( this.options.updateOutBounds && this._maxBounds.contains(newBounds) )//bounds not incremented
 			{
@@ -259,41 +259,43 @@ L.LayerJSON = L.FeatureGroup.extend({
 
 	update: function() {	//populate target layer
 
-		var prec = this.options.precision,
-			bb = this._map.getBounds(),
+		var self = this;
+
+		var prec = self.options.precision,
+			bb = self._map.getBounds(),
 			sw = bb.getSouthWest(),
 			ne = bb.getNorthEast(),
 			bbox = [
 				[ parseFloat(sw.lat.toFixed(prec)), parseFloat(sw.lng.toFixed(prec)) ],
 				[ parseFloat(ne.lat.toFixed(prec)), parseFloat(ne.lng.toFixed(prec)) ]
 			];
-
-		if(this._hashUrl)							//conver bbox to url string
-			bbox = L.Util.template(this._hashUrl, {
+			
+		if(self._hashUrl)							//conver bbox to url string
+			bbox = L.Util.template(self._hashUrl, {
 					lat1: bbox[0][0], lon1: bbox[0][1],
 					lat2: bbox[1][0], lon2: bbox[1][1]
 				});
 
-		if(this._curReq && this._curReq.abort)
-			this._curReq.abort();		//prevent parallel requests
+		if(self._curReq && self._curReq.abort)
+			self._curReq.abort();		//prevent parallel requests
 
-		var that = this;
-		that.fire('dataloading', {req: bbox });
-		this._curReq = this._callData(bbox, function(json) {
+		
+		self.fire('dataloading', {req: bbox });
+		self._curReq = self._callData(bbox, function(json) {
 
-			that._curReq = null;
+			self._curReq = null;
 
-			if(that._filterData)
-				json = that._filterData(json);
+			if(self._filterData)
+				json = self._filterData(json);
 
-			if(that.options.propertyItems)
-				json = that._getPath(json, that.options.propertyItems);
+			if(self.options.propertyItems)
+				json = self._getPath(json, self.options.propertyItems);
 
-			that.fire('dataloaded', {data: json});
+			self.fire('dataloaded', {data: json});
 
 			for (var k in json) {
 			    if (!isNaN(parseFloat(k)) && isFinite(k))
-			        that.addMarker.call(that, json[k]);
+			        self.addMarker.call(self, json[k]);
 			}
 		});
 	},
