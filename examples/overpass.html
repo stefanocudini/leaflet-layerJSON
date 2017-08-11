@@ -28,7 +28,7 @@
 <script>
 
 	var map = L.map('map', {
-			zoom: 15,
+			zoom: 16,
 			minZoom:14,
 			center: new L.latLng([41.898699, 12.472915]),
 			layers: L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png')
@@ -40,10 +40,14 @@
 		propertyItems: 'elements',
 		propertyTitle: 'tags.name',
 		propertyLoc: ['lat','lon'],
+		caching: true,
+		cacheId: function(data, latlng) {
+			return data.tags.name || latlng.toString();
+		},
 		buildIcon: function(data, title) {
 			
 			return new L.Icon({
-				iconUrl:'bar.png',
+				iconUrl: 'bar.png',
 				iconSize: new L.Point(32, 37),
 				iconAnchor: new L.Point(18, 37),
 				popupAnchor: new L.Point(0, -37)

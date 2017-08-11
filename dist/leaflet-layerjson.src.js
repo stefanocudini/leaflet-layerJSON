@@ -1,5 +1,5 @@
 /* 
- * Leaflet JSON Layer v0.2.5 - 2017-08-09 
+ * Leaflet JSON Layer v0.2.8 - 2017-08-11 
  * 
  * Copyright 2017 Stefano Cudini 
  * stefano.cudini@gmail.com 
@@ -32,23 +32,23 @@ L.LayerJSON = L.FeatureGroup.extend({
 		callData: null,				//custom function for data source, params: (req: url|bbox, callback: func), return {abort: func} or jQuery jqXHR Object
 		filterData: null,			//function that filter marker by its data, run before onEachMarker
 		//
+		locAsGeoJSON: false, 		//interpret location data as [lon, lat] value pair instead of [lat, lon]		
 		propertyItems: '', 			//json property used contains data items
 		propertyTitle: 'title', 	//json property used as title(popup, marker, icon)
 		propertyLoc: 'loc', 		//json property used as Latlng of marker use array for select double fields(ex. ['lat','lon'] )
 		propertyId: 'id',			//json property used to uniquely identify data items
-		locAsGeoJSON: false, 		//interpret location data as [lon, lat] value pair instead of [lat, lon]
 		//							// support dotted format: 'prop.subprop.title'
 		layerTarget: null,			//pre-existing layer to add markers, is a LayerGroup or L.MarkerClusterGroup http://goo.gl/tvmu0
 		dataToMarker: null,			//function that will be used for creating markers from json points, similar to pointToLayer of L.GeoJSON
 		onEachMarker: null,			//function called on each marker created, similar to option onEachFeature of L.GeoJSON
 		buildPopup: null,			//function popup builder
-		optsPopup: null,			//popup options
 		buildIcon: null,			//function icon builder
+		optsPopup: null,			//popup options		
 		//
 		minZoom: 10,				//min zoom for call data
 		caching: true,				//enable requests caching
+		cacheId: null,				//function to generate id used to uniquely identify data items in cache
 		minShift: 1000,				//min shift before update data(in meters)
-		updateOutBounds: true,		//request new data only if current bounds higher than last bounds
 		precision: 6,				//number of digit send to server for lat,lng precision
 		attribution: ''				//attribution text
 		//TODO option: enabled, if false
@@ -78,7 +78,7 @@ L.LayerJSON = L.FeatureGroup.extend({
 
 		this._curReq = null;
 		this._center = null;
-		this._maxBounds = null;
+		this._cacheBounds = null;
 		this._markersCache = {};	//used for caching _dataToMarker builds
 	},
 
@@ -86,7 +86,7 @@ L.LayerJSON = L.FeatureGroup.extend({
 
 		L.FeatureGroup.prototype.onAdd.call(this, map);		//set this._map
 		this._center = map.getCenter();
-		this._maxBounds = map.getBounds();
+		this._cacheBounds = map.getBounds();
 
         map.on('moveend zoomend', this._onMove, this);
 
@@ -204,10 +204,15 @@ L.LayerJSON = L.FeatureGroup.extend({
 			}
 		}
 
-		if(this.options.propertyId)
-			hash = this._getPath(data, this.options.propertyId);
-		else
-			hash = loc.lat+''+loc.lng+''+this._getPath(data, this.options.propertyTitle);
+		if(this.options.cacheId) {
+			hash = this.options.cacheId.call(this, data, loc);
+		}
+		else {
+			if(this.options.propertyId)
+				hash = this._getPath(data, this.options.propertyId);
+			else
+				hash = loc.lat+''+loc.lng+''+this._getPath(data, this.options.propertyTitle);
+		}
 
 		if(typeof this._markersCache[hash] === 'undefined')
 			this._markersCache[hash] = this._dataToMarker(data, loc);
@@ -230,7 +235,7 @@ L.LayerJSON = L.FeatureGroup.extend({
 		return bounds.contains(loc);
 	},
 
-	_markersCacheToLayer: function(bounds) {	//show cached markers to layer
+	_loadCacheToBounds: function(bounds) {	//show/hide cached markers
 		for(var i in this._markersCache)
 		{
 			if(this._markersCache[i])
@@ -258,14 +263,13 @@ L.LayerJSON = L.FeatureGroup.extend({
 
 		if(this.options.caching) {
 
-			if( this.options.updateOutBounds && this._maxBounds.contains(newBounds) )//bounds not incremented
+			if( this._cacheBounds.contains(newBounds) )
 			{
-				this._markersCacheToLayer(newBounds);
-				//TODO maybe execute this ever
+				this._loadCacheToBounds(newBounds);
 				return false;
 			}
 			else
-				this._maxBounds.extend(newBounds);
+				this._cacheBounds.extend(newBounds);
 		}
 		else
 		 	this.clearLayers();
