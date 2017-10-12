@@ -1,4 +1,0 @@
-syntax: glob
-smart.lock
-packages/*
-node_modules/*
