@@ -7,47 +7,41 @@ A Dynamic Leaflet Layer that load JSON data in layer in the form of markers with
 
 and minimize remote requests with caching system
 
-Tested in Leaflet 0.7.3
+Tested in Leaflet 0.7 and 1.1
 
+# Options
+| Option		| Data	  | Description                       |
+| ------------- | --------| ----------------------------------------- |
+| url           | String  | remote url                                |
+| jsonpParam    | String  | callback parameter name for jsonp request append to url |
+| jsonpParam    | String  | callback parameter name for jsonp request append to url |
+| callData	    | String  | custom function for data source, params: (req: url|bbox, callback: func), return {abort: func} or jQuery jqXHR Object |
+| **Filtering**   |         |   |                                      
+| propertyItems	| String  | json property used contains data items |
+| propertyLoc	| String  | json property used as Latlng of marker, if is array: *['lat','lon']* select double fields |
+| locAsGeoJSON	| String  | interpret location data as [lon, lat] value pair instead of [lat, lon] |
+| propertyTitle	| String  | json property used as title in marker |
+| filterData	| String  | function for pre-filter data |
+| **Rendering**   |         |   |
+| dataToMarker	| String  | function that will be used for creating markers from json points |
+| onEachMarker	| String  | function called on each marker created, similar to option onEachFeature of L.GeoJSON |
+| layerTarget	| String  | pre-existing layer to add markers(*L.LayerGroup*, *L.MarkerClusterGroup*) |
+| buildPopup	| String  | function popup builder |
+| optsPopup	    | String  | popup options |
+| buildIcon	    | String  | function icon builder |
+| **Caching**     |         |  |
+| minShift	    | String | min shift for update data(in meters) |
+| precision	    | String | number of digit send to server for lat,lng precision |
+| updateOutBounds| String | request new data only if current bounds higher than last bounds |
 
-How to use
-------
+# Usage
 
 ```
 var l = new L.LayerJSON({url: "search.php?lat1={lat1}&lat2={lat2}&lon1={lon1}&lon2={lon2}" });
 map.addLayer(l);
 ```
 
-Options
-------
-
-Data Source:
-* **url** remote url,
-* **jsonpParam** callback parameter name for jsonp request append to url
-* **callData** custom function for data source, params: (req: url|bbox, callback: func), return {abort: func} or jQuery jqXHR Object
-
-Filtering:
-* **propertyItems** json property used contains data items
-* **propertyLoc** json property used as Latlng of marker, if is array: *['lat','lon']* select double fields
-* **locAsGeoJSON** interpret location data as [lon, lat] value pair instead of [lat, lon]
-* **propertyTitle** json property used as title in marker
-* **filterData** function for pre-filter data
-
-Rendering:
-* **dataToMarker** function that will be used for creating markers from json points
-* **onEachMarker** function called on each marker created, similar to option onEachFeature of L.GeoJSON
-* **layerTarget** pre-existing layer to add markers(*L.LayerGroup*, *L.MarkerClusterGroup*)
-* **buildPopup** function popup builder
-* **optsPopup** popup options
-* **buildIcon** function icon builder
-
-Caching:
-* **minShift** min shift for update data(in meters)
-* **updateOutBounds** request new data only if current bounds higher than last bounds
-* **precision** number of digit send to server for lat,lng precision
-
-Where
-------
+# Where
 
 **Demos:**
 
@@ -61,8 +55,8 @@ Where
 [Atmosphere](https://atmosphere.meteor.com/package/leaflet-layerjson)
 
 
-Build
-------
+# Build
+
 This plugin support [Grunt](http://gruntjs.com/) for building process.
 Therefore the deployment require [NPM](https://npmjs.org/) installed in your system.
 
