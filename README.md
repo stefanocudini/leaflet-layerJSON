@@ -34,6 +34,12 @@ Tested in Leaflet 0.7 and 1.1
 | precision	    | String | number of digit send to server for lat,lng precision |
 | updateOutBounds| String | request new data only if current bounds higher than last bounds |
 
+# Events
+| Event			 | Data			  | Description                               |
+| ---------------------- | ---------------------- | ----------------------------------------- |
+| 'dataloading' | {req: url|bbox} | fired before ajax/jsonp request, req is bbox if url option is null |
+| 'dataloaded'	| {data: json}	  | fired on ajax/jsonp request success |
+
 # Usage
 
 ```
