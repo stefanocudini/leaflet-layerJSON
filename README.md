@@ -1,6 +1,8 @@
 Leaflet JSON Layer
 ============
 
+[![npm version](https://badge.fury.io/js/leaflet-layerjson.svg)](http://badge.fury.io/js/leaflet-layerjson)
+
 Simple way for transform any JSON data source in a Leaflet Layer!
 
 A Dynamic Leaflet Layer that load JSON data in layer in the form of markers with attributes
@@ -55,9 +57,8 @@ map.addLayer(l);
 
 **Source:**
 
-[Github](https://github.com/stefanocudini/leaflet-layerjson)  
-[Bitbucket](https://bitbucket.org/stefanocudini/leaflet-layerjson)  
-[NPM](https://npmjs.org/package/leaflet-layerjson)  
+[Github](https://github.com/stefanocudini/leaflet-layerjson) 
+
 [Atmosphere](https://atmosphere.meteor.com/package/leaflet-layerjson)
 
 
