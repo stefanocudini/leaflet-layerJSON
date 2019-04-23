@@ -118,12 +118,26 @@ L.LayerJSON = L.FeatureGroup.extend({
 
 	clearLayers: function () {
 
-		this._markersCache = {};	//cached gen markers
+		var self = this,
+			newBounds = this._map.getBounds();
+		
+		self._markersCache = {};	//cached gen markers
 
-		if(this.options.layerTarget)
-			this.options.layerTarget.clearLayers.call(this.options.layerTarget);
-		else
-			L.FeatureGroup.prototype.clearLayers.call(this);
+		if(self.options.layerTarget) {
+			//self.options.layerTarget.clearLayers.call(self.options.layerTarget);
+			self.options.layerTarget.eachLayer(function(l) {
+				if(!self._contains(newBounds, l) )
+					self.options.layerTarget.removeLayer(l);
+			});
+		}
+		else {
+			//L.FeatureGroup.prototype.clearLayers.call(self);
+			self.eachLayer(function(l) {
+				if(!self._contains(newBounds, l) )
+					self.removeLayer(l);
+			}, self);
+		}
+
 		return this;
 	},
 	
