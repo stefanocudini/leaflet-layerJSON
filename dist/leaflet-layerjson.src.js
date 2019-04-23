@@ -1,5 +1,5 @@
 /* 
- * Leaflet JSON Layer v0.3.0 - 2019-04-23 
+ * Leaflet JSON Layer v0.3.1 - 2019-04-23 
  * 
  * Copyright 2019 Stefano Cudini 
  * stefano.cudini@gmail.com 
