@@ -1,5 +1,5 @@
 /* 
- * Leaflet JSON Layer v0.3.2 - 2019-12-27 
+ * Leaflet JSON Layer v0.3.3 - 2019-12-27 
  * 
  * Copyright 2019 Stefano Cudini 
  * stefano.cudini@gmail.com 
@@ -350,6 +350,8 @@ L.LayerJSON = L.FeatureGroup.extend({
 			for (var c in this._markersCache) {
 				if(!jsonbyhash[ this._markersCache[c]._cacheId ])
 					this.removeLayer(this._markersCache[c]);
+				else
+					this.addLayer(this._markersCache[c]);
 			}
 		}
 	},

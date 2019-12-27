@@ -334,6 +334,8 @@ L.LayerJSON = L.FeatureGroup.extend({
 			for (var c in this._markersCache) {
 				if(!jsonbyhash[ this._markersCache[c]._cacheId ])
 					this.removeLayer(this._markersCache[c]);
+				else
+					this.addLayer(this._markersCache[c]);
 			}
 		}
 	},
