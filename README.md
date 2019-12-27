@@ -17,24 +17,27 @@ Tested in Leaflet 0.7 and 1.1
 | url           | String  | remote url                                |
 | jsonpParam    | String  | callback parameter name for jsonp request append to url |
 | jsonpParam    | String  | callback parameter name for jsonp request append to url |
-| callData	    | String  | custom function for data source, params: (req: url|bbox, callback: func), return {abort: func} or jQuery jqXHR Object |
+| callData	    | Function  | custom function for data source, params: (req: url|bbox, callback: func), return {abort: func} or jQuery jqXHR Object |
 | **Filtering**   |         |   |                                      
 | propertyItems	| String  | json property used contains data items |
 | propertyLoc	| String  | json property used as Latlng of marker, if is array: *['lat','lon']* select double fields |
 | locAsGeoJSON	| String  | interpret location data as [lon, lat] value pair instead of [lat, lon] |
 | propertyTitle	| String  | json property used as title in marker |
-| filterData	| String  | function for pre-filter data |
+| filterData	| Function  | function for pre-filter data |
 | **Rendering**   |         |   |
-| dataToMarker	| String  | function that will be used for creating markers from json points |
-| onEachMarker	| String  | function called on each marker created, similar to option onEachFeature of L.GeoJSON |
-| layerTarget	| String  | pre-existing layer to add markers(*L.LayerGroup*, *L.MarkerClusterGroup*) |
-| buildPopup	| String  | function popup builder |
+| dataToMarker	| Function  | function that will be used for creating markers from json points |
+| layerTarget	| L.Layer  | pre-existing layer to add markers(*L.LayerGroup*, *L.MarkerClusterGroup*) |
+| buildPopup	| Function  | function popup builder |
 | optsPopup	    | String  | popup options |
-| buildIcon	    | String  | function icon builder |
+| buildIcon	    | Function  | function icon builder |
 | **Caching**     |         |  |
-| minShift	    | String | min shift for update data(in meters) |
-| precision	    | String | number of digit send to server for lat,lng precision |
+| minZoom       | Number  	| min zoom for call data |
+| caching       | Boolean   | remote requests caching |
+| cacheId       | Function  | function to generate id used to uniquely identify data items in cache |
+| minShift	    | Number | min shift for update data(in meters) |
+| precision	    | Number | number of digit send to server for lat,lng precision |
 | updateOutBounds| String | request new data only if current bounds higher than last bounds |
+| updateMarkers | Boolean | update all markers in map to last results of callData |
 
 # Events
 | Event			 | Data			  | Description                               |

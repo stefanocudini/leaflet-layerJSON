@@ -24,7 +24,6 @@ L.LayerJSON = L.FeatureGroup.extend({
 		//							// support dotted format: 'prop.subprop.title'
 		layerTarget: null,			//pre-existing layer to add markers, is a LayerGroup or L.MarkerClusterGroup http://goo.gl/tvmu0
 		dataToMarker: null,			//function that will be used for creating markers from json points, similar to pointToLayer of L.GeoJSON
-		onEachMarker: null,			//function called on each marker created, similar to option onEachFeature of L.GeoJSON
 		buildPopup: null,			//function popup builder
 		buildIcon: null,			//function icon builder
 		optsPopup: null,			//popup options		
@@ -34,6 +33,7 @@ L.LayerJSON = L.FeatureGroup.extend({
 		cacheId: null,				//function to generate id used to uniquely identify data items in cache
 		minShift: 1000,				//min shift before update data(in meters)
 		precision: 6,				//number of digit send to server for lat,lng precision
+		updateMarkers: false,		//update all markers in map to last results of callData
 		attribution: ''				//attribution text
 		//TODO option: enabled, if false
 		//TODO methods: enable()/disable()
@@ -121,20 +121,24 @@ L.LayerJSON = L.FeatureGroup.extend({
 		var self = this,
 			newBounds = this._map.getBounds();
 		
-		self._markersCache = {};	//cached gen markers
+		//self._markersCache = {};	//cached gen markers
 
 		if(self.options.layerTarget) {
 			//self.options.layerTarget.clearLayers.call(self.options.layerTarget);
 			self.options.layerTarget.eachLayer(function(l) {
-				if(!self._contains(newBounds, l) )
+				if(!self._contains(newBounds, l) ) {
 					self.options.layerTarget.removeLayer(l);
+					delete self._markersCache[l._cacheId];
+				}
 			});
 		}
 		else {
 			//L.FeatureGroup.prototype.clearLayers.call(self);
 			self.eachLayer(function(l) {
-				if(!self._contains(newBounds, l) )
+				if(!self._contains(newBounds, l) ) {
 					self.removeLayer(l);
+					delete self._markersCache[l._cacheId];
+				}
 			}, self);
 		}
 
@@ -191,7 +195,7 @@ L.LayerJSON = L.FeatureGroup.extend({
 
 		if( L.Util.isArray(propLoc) ) {
 			loc = L.latLng( parseFloat( this._getPath(data, propLoc[0]) ),
-							   parseFloat( this._getPath(data, propLoc[1]) )  );
+							parseFloat( this._getPath(data, propLoc[1]) )  );
 		}
 		else {
 			if (this.options.locAsGeoJSON) {
@@ -212,14 +216,13 @@ L.LayerJSON = L.FeatureGroup.extend({
 				hash = loc.lat+''+loc.lng+''+this._getPath(data, this.options.propertyTitle);
 		}
 
-		if(typeof this._markersCache[hash] === 'undefined')
+		if(typeof this._markersCache[hash] === 'undefined') {
 			this._markersCache[hash] = this._dataToMarker(data, loc);
-
-		if(this.options.onEachMarker)//maybe useless
-			this.options.onEachMarker(data, this._markersCache[hash]);
-
-		if(this._markersCache[hash])
+			this._markersCache[hash]._cacheId = hash;
 			this.addLayer( this._markersCache[hash] );
+		}
+
+		return hash;
 	},
 
 	_contains: function(bounds, el) {
@@ -301,6 +304,8 @@ L.LayerJSON = L.FeatureGroup.extend({
 		self.fire('dataloading', {req: bbox });
 		self._curReq = self._callData(bbox, function(json) {
 
+			//console.log('callData',json)
+
 			self._curReq = null;
 
 			if(self._filterData)
@@ -311,11 +316,26 @@ L.LayerJSON = L.FeatureGroup.extend({
 
 			self.fire('dataloaded', {data: json});
 
-			for (var k in json) {
-			    if (!isNaN(parseFloat(k)) && isFinite(k))
-			        self.addMarker.call(self, json[k]);
-			}
+			self.updateMarkers(json);
 		});
+	},
+
+	updateMarkers: function(json) {
+		var jsonbyhash = {};
+
+		for (var k in json) {
+			if (!isNaN(parseFloat(k)) && isFinite(k)) {
+				var h = this.addMarker.call(this, json[k]);
+				jsonbyhash[h] = 1;
+			}
+		}
+
+		if(this.options.updateMarkers) {
+			for (var c in this._markersCache) {
+				if(!jsonbyhash[ this._markersCache[c]._cacheId ])
+					this.removeLayer(this._markersCache[c]);
+			}
+		}
 	},
 
 
