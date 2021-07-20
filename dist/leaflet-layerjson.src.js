@@ -3,12 +3,12 @@
  * 
  * Copyright 2019 Stefano Cudini 
  * stefano.cudini@gmail.com 
- * http://labs.easyblog.it/ 
+ * https://opengeo.tech/ 
  * 
  * Licensed under the MIT license. 
  * 
  * Demo: 
- * http://labs.easyblog.it/maps/leaflet-layerjson/ 
+ * https://opengeo.tech/maps/leaflet-layerjson/ 
  * 
  * Source: 
  * git@github.com:stefanocudini/leaflet-layerjson.git 
@@ -38,7 +38,7 @@ L.LayerJSON = L.FeatureGroup.extend({
 		propertyLoc: 'loc', 		//json property used as Latlng of marker use array for select double fields(ex. ['lat','lon'] )
 		propertyId: 'id',			//json property used to uniquely identify data items
 		//							// support dotted format: 'prop.subprop.title'
-		layerTarget: null,			//pre-existing layer to add markers, is a LayerGroup or L.MarkerClusterGroup http://goo.gl/tvmu0
+		layerTarget: null,			//pre-existing layer to add markers, is a LayerGroup or L.MarkerClusterGroup https://goo.gl/tvmu0
 		dataToMarker: null,			//function that will be used for creating markers from json points, similar to pointToLayer of L.GeoJSON
 		buildPopup: null,			//function popup builder
 		buildIcon: null,			//function icon builder

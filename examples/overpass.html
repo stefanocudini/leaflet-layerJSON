@@ -1,5 +1,5 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"> 
-<html xmlns="http://www.w3.org/1999/xhtml"> 
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"> 
+<html xmlns="https://www.w3.org/1999/xhtml"> 
 <head> 
 <title>Leaflet JSON Layer</title> 
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" /> 
@@ -12,12 +12,12 @@
 	<h3><a href="../"><big>◄</big> Leaflet JSON Layer</a></h3>
 	<h4>Example: <em>Show Bars in Rome</em></h4>
 	<div id="post-it">
-		Using: <b><a href="http://wiki.openstreetmap.org/wiki/Overpass_API">Overpass API</a></b>
+		Using: <b><a href="https://wiki.openstreetmap.org/wiki/Overpass_API">Overpass API</a></b>
 		<br /><br />
 		Service offer by <br />
-		<b><a href="http://overpass-api.de/">overpass-api.de</a></b>
+		<b><a href="https://overpass-api.de/">overpass-api.de</a></b>
 		<br /><br />
-		Data offer by <a href="http://osm.org">OpenStreetMap.org</a>
+		Data offer by <a href="https://osm.org">OpenStreetMap.org</a>
 	</div>
 	<div style="">
 		<div id="map"></div>
@@ -31,12 +31,12 @@
 			zoom: 16,
 			minZoom:14,
 			center: new L.latLng([41.898699, 12.472915]),
-			layers: L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png')
+			layers: L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png')
 		}),
 		loader = L.DomUtil.get('loader');
 
 	L.layerJSON({
-		url: 'http://overpass-api.de/api/interpreter?data=[out:json];node({lat1},{lon1},{lat2},{lon2})[amenity=bar];out;',
+		url: 'https://overpass-api.de/api/interpreter?data=[out:json];node({lat1},{lon1},{lat2},{lon2})[amenity=bar];out;',
 		propertyItems: 'elements',
 		propertyTitle: 'tags.name',
 		propertyLoc: ['lat','lon'],
@@ -66,7 +66,7 @@
 	.addTo(map);
 
 </script>
-<div id="copy"><a href="http://labs.easyblog.it/">Labs</a> &bull; <a rel="author" href="http://labs.easyblog.it/stefano-cudini/">Stefano Cudini</a></div>
+<div id="copy"><a href="https://opengeo.tech/">Labs</a> &bull; <a rel="author" href="https://opengeo.tech/stefano-cudini/">Stefano Cudini</a></div>
 <a href="https://github.com/stefanocudini/leaflet-layerJSON"><img id="ribbon" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"></a>
 <script type="text/javascript" src="/labs.analytics.js"></script>
 </body>

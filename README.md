@@ -1,7 +1,7 @@
 Leaflet JSON Layer
 ============
 
-[![npm version](https://badge.fury.io/js/leaflet-layerjson.svg)](http://badge.fury.io/js/leaflet-layerjson)
+[![npm version](https://badge.fury.io/js/leaflet-layerjson.svg)](https://badge.fury.io/js/leaflet-layerjson)
 
 Simple way for transform any JSON data source in a Leaflet Layer!
 
@@ -56,7 +56,7 @@ map.addLayer(l);
 
 **Demos:**
 
-[http://labs.easyblog.it/maps/leaflet-layerjson](http://labs.easyblog.it/maps/leaflet-layerjson/)
+[https://opengeo.tech/maps/leaflet-layerjson](https://opengeo.tech/maps/leaflet-layerjson/)
 
 **Source:**
 
@@ -67,7 +67,7 @@ map.addLayer(l);
 
 # Build
 
-This plugin support [Grunt](http://gruntjs.com/) for building process.
+This plugin support [Grunt](https://gruntjs.com/) for building process.
 Therefore the deployment require [NPM](https://npmjs.org/) installed in your system.
 
 After you've made sure to have npm working, run this in command line:
