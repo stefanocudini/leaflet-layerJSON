@@ -9,6 +9,10 @@ A Dynamic Leaflet Layer that load JSON data in layer in the form of markers with
 
 and minimize remote requests with caching system
 
+Copyright 2023 Stefano Cudini
+
+If this project helped your work help me to keep this alive by [Paypal **DONATION &#10084;**](https://www.paypal.me/stefanocudini)
+
 Tested in Leaflet 0.7 and 1.1
 
 # Options
