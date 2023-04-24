@@ -16,7 +16,7 @@ li {
 }
 #map {
 	border:2px solid #669;
-	width:100%;
+	width:800px;
 	height:340px;
 }
 #post-it {
@@ -38,7 +38,7 @@ li {
 	width: 50px;
 }
 #data {
-	width:100%;
+	width:800px;
 	height:150px;
 	background:#eee;
 	border:2px solid #669;
